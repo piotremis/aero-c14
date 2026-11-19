@@ -3,6 +3,7 @@
   "name": "AERO C14 – Unofficial Home Assistant Integration",
   "after_dependencies": [
     "frontend",
+    "http",
     "lovelace"
   ],
   "codeowners": [
@@ -14,7 +15,7 @@
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/piotremis/aero-c14/issues",
   "requirements": [
-    "pyserial==3.5"
+    "serialx>=1.11.0"
   ],
   "version": "1.0.0"
 }

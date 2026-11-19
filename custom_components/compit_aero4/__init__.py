@@ -1,10 +1,14 @@
 """Local AERO C14 integration with optional read polling."""
 from homeassistant.const import Platform
 from homeassistant.exceptions import ConfigEntryError
+from homeassistant.helpers import config_validation as cv
 from .coordinator import Aero4Coordinator
 from .settings import endpoint_key
 from .services import async_register_services
 from .frontend import async_register_cards
+from .const import DOMAIN
+
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.SWITCH, Platform.SELECT, Platform.NUMBER, Platform.BUTTON]
 

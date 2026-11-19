@@ -77,46 +77,27 @@
       "ventilation_requested": {
         "name": "Żądany bieg",
         "state": {
-          "B1": "B1",
-          "B2": "B2",
-          "B3": "B3",
           "stopped": "Zatrzymana"
         }
       },
       "ventilation_mode_requested": {
         "name": "Żądany tryb wentylacji",
         "state": {
-          "B1": "B1",
-          "B3": "B3",
           "schedule": "Harmonogram",
-          "B2": "Ręcznie · B2",
           "stopped": "Stop",
           "holiday_schedule": "Harmonogram święto"
         }
       },
       "bypass_requested": {
-        "name": "Żądany bypass",
-        "state": {
-          "OFF": "Wyłączony",
-          "ON": "Włączony",
-          "AUTO": "Automatyczny"
-        }
+        "name": "Żądany bypass"
       },
       "bypass_readback": {
-        "name": "Odczyt parametru bypassu",
-        "state": {
-          "OFF": "Wyłączony",
-          "ON": "Włączony",
-          "AUTO": "Automatyczny"
-        }
+        "name": "Odczyt parametru bypassu"
       },
       "ventilation_mode_readback": {
         "name": "Odczyt parametru wentylacji",
         "state": {
-          "B1": "B1",
-          "B3": "B3",
           "schedule": "Harmonogram",
-          "B2": "Ręcznie · B2",
           "stopped": "Stop",
           "holiday_schedule": "Harmonogram święto"
         }
@@ -326,9 +307,6 @@
         "name": "Tryb pracy — odczyt",
         "state": {
           "manual_stop": "Stop",
-          "B1": "B1",
-          "B2": "B2",
-          "B3": "B3",
           "holiday_schedule": "Harmonogram święto",
           "schedule": "Harmonogram"
         }
@@ -1302,9 +1280,6 @@
       "manual_speed": {
         "name": "Bieg ręczny",
         "state": {
-          "B1": "B1",
-          "B2": "B2",
-          "B3": "B3",
           "stopped": "Stop"
         }
       },
@@ -1342,12 +1317,7 @@
         }
       },
       "bypass_mode": {
-        "name": "Tryb bypassu",
-        "state": {
-          "OFF": "Wyłączony",
-          "AUTO": "Automatyczny",
-          "ON": "Włączony"
-        }
+        "name": "Tryb bypassu"
       },
       "nano_language": {
         "name": "Język panelu Nano",

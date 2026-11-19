@@ -89,18 +89,19 @@ class SerialSource:
 
     def _open(self):
         factory = self._factory
-        if factory is None:
-            import serial
-            factory = serial.Serial
-        options = dict(port=None, baudrate=self.config.baud, bytesize=8, parity='N',
+        options = dict(port=self.config.port, baudrate=self.config.baud, bytesize=8, parity='N',
             stopbits=self.config.stopbits, timeout=self.config.poll_interval, write_timeout=.5,
             xonxoff=False, rtscts=False, dsrdtr=False)
         if os.name == 'posix':
             options['exclusive'] = True
+        if factory is None:
+            import serialx
+            factory = serialx.Serial
+            options.update(dtr_on_open=serialx.PinState.LOW, rts_on_open=serialx.PinState.LOW)
         self._port = factory(**options)
-        self._port.dtr = False
-        self._port.rts = False
-        self._port.port = self.config.port
+        if self._factory is not None:
+            self._port.dtr = False
+            self._port.rts = False
         self._port.open()
 
     async def open(self):

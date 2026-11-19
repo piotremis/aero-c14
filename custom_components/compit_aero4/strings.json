@@ -77,46 +77,27 @@
       "ventilation_requested": {
         "name": "Requested speed",
         "state": {
-          "B1": "B1",
-          "B2": "B2",
-          "B3": "B3",
           "stopped": "Stopped"
         }
       },
       "ventilation_mode_requested": {
         "name": "Requested ventilation mode",
         "state": {
-          "B1": "B1",
-          "B3": "B3",
           "schedule": "Schedule",
-          "B2": "Manual · B2",
           "stopped": "Stopped",
           "holiday_schedule": "Holiday schedule"
         }
       },
       "bypass_requested": {
-        "name": "Requested bypass",
-        "state": {
-          "OFF": "Off",
-          "ON": "On",
-          "AUTO": "Automatic"
-        }
+        "name": "Requested bypass"
       },
       "bypass_readback": {
-        "name": "Bypass parameter readback",
-        "state": {
-          "OFF": "Off",
-          "ON": "On",
-          "AUTO": "Automatic"
-        }
+        "name": "Bypass parameter readback"
       },
       "ventilation_mode_readback": {
         "name": "Ventilation parameter readback",
         "state": {
-          "B1": "B1",
-          "B3": "B3",
           "schedule": "Schedule",
-          "B2": "Manual · B2",
           "stopped": "Stopped",
           "holiday_schedule": "Holiday schedule"
         }
@@ -326,9 +307,6 @@
         "name": "Operating mode — readback",
         "state": {
           "manual_stop": "Stop",
-          "B1": "B1",
-          "B2": "B2",
-          "B3": "B3",
           "holiday_schedule": "Holiday schedule",
           "schedule": "Schedule"
         }
@@ -1302,9 +1280,6 @@
       "manual_speed": {
         "name": "Manual speed",
         "state": {
-          "B1": "B1",
-          "B2": "B2",
-          "B3": "B3",
           "stopped": "Stopped"
         }
       },
@@ -1342,12 +1317,7 @@
         }
       },
       "bypass_mode": {
-        "name": "Bypass mode",
-        "state": {
-          "OFF": "Off",
-          "AUTO": "Automatic",
-          "ON": "On"
-        }
+        "name": "Bypass mode"
       },
       "nano_language": {
         "name": "Nano panel language",
