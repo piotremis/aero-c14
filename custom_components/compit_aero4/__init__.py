@@ -16,6 +16,7 @@ async def async_setup(hass, config):
 
 
 async def async_setup_entry(hass, entry):
+    await async_register_cards(hass)
     try:
         key = endpoint_key(entry.data)
         if any(other.entry_id != entry.entry_id and

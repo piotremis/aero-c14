@@ -4,6 +4,20 @@
   <img src="custom_components/compit_aero4/brand/icon.png" alt="AERO C14" width="112">
 </p>
 
+<p align="center">
+  <a href="https://github.com/piotremis/aero-c14/releases">
+    <img src="https://img.shields.io/github/v/release/piotremis/aero-c14?style=flat-square" alt="Release">
+  </a>
+  <a href="https://github.com/piotremis/aero-c14/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
+  </a>
+  <a href="https://hacs.xyz">
+    <img src="https://img.shields.io/badge/HACS-Custom-41BDF5?style=flat-square" alt="HACS">
+  </a>
+  <img src="https://img.shields.io/badge/Protocol-C14%20%2F%20RS485-blue?style=flat-square" alt="RS485">
+  <img src="https://img.shields.io/badge/Cloud-Not%20required-success?style=flat-square" alt="Local">
+</p>
+
 Lokalna integracja rekuperatora **AERO 4** z panelem **Nano Color 2**. Umożliwia odczyt parametrów, sterowanie wentylacją i zarządzanie harmonogramem bez korzystania z chmury iNext.
 
 **Wersja: 1.0.0** · **Języki: polski i angielski** · **Licencja: MIT**
@@ -61,7 +75,7 @@ Kliknij obraz, aby zobaczyć pełny rozmiar.
 | Urządzenie | AERO 4 z panelem Nano Color 2 |
 | Połączenie | Adapter USB/RS485 lub przezroczysty konwerter TCP/RS485 |
 | Magistrala | C14, 9600 bodów, 8N1 |
-| Home Assistant | Instalacja umożliwiająca dodawanie integracji niestandardowych |
+| Home Assistant | 2026.10.4 lub nowszy, z obsługą integracji niestandardowych |
 
 Integrację rozwijano na AERO 4A.58 i Nano Color 2 z firmware 6.30. Dostępność poszczególnych funkcji zależy od wersji urządzenia i podłączonego wyposażenia.
 
@@ -106,6 +120,10 @@ Domyślnie integracja pracuje jako odbiornik danych. Aby korzystać ze sterowani
 Przed włączeniem lokalnego odpytywania odłącz iNext lub inną bramkę sterującą tą samą magistralą. Nano pozostaje masterem. Z jednego portu adaptera może korzystać tylko jeden odbiornik.
 
 ## Karty panelu
+
+Integracja automatycznie rejestruje obie karty jako zasoby Lovelace typu `module`. Nie trzeba dodawać plików JavaScript ręcznie. Rejestracja działa po restarcie Home Assistant i przeładowaniu integracji, usuwa powtórzone wpisy tych kart i aktualizuje adresy zasobów na podstawie zawartości plików, aby unieważnić cache.
+
+Obsługiwany jest również tryb `resource_mode: yaml` w sekcji `lovelace`: karty są dodawane do zasobów w pamięci HA, także po wywołaniu `lovelace.reload_resources`. Pliki YAML użytkownika pozostają bez zmian. Błędy rejestracji są zapisywane w dzienniku integracji.
 
 Karty są dostarczane razem z integracją. W panelu wybierz **Edytuj → Dodaj kartę → Ręcznie** i wklej odpowiednią konfigurację.
 
