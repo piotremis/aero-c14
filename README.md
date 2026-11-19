@@ -168,7 +168,7 @@ Encje CO₂, PM2,5 i PM10 powstają po wykryciu odpowiedniego czujnika na C14. B
 2. Uruchom ponownie Home Assistant.
 3. Odśwież panel przez **Ctrl+F5**, aby załadować aktualny kod kart.
 
-Istniejący wpis integracji i nastawy pozostają zachowane. Przy migracji ze starszych kart instalowanych ręcznie usuń z zasobów panelu wpisy `/local/aero4-card.js` i `/local/aero4-schedule-card.js`.
+Istniejący wpis integracji i nastawy pozostają zachowane.
 
 ## Diagnostyka i pomoc
 
