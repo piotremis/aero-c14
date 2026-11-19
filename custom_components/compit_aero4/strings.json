@@ -1,0 +1,2086 @@
+{
+  "title": "AERO C14 – Unofficial Home Assistant Integration",
+  "config": {
+    "step": {
+      "user": {
+        "title": "AERO C14 – Unofficial Home Assistant Integration",
+        "description": "Local Serial or TCP/RS485 connection. Polling without iNext is optional and disabled by default.",
+        "menu_options": {
+          "serial": "USB / RS485 (Serial)",
+          "tcp": "TCP / RS485"
+        }
+      },
+      "reconfigure": {
+        "title": "Change connection",
+        "menu_options": {
+          "serial": "USB / RS485 (Serial)",
+          "tcp": "TCP / RS485"
+        }
+      },
+      "serial": {
+        "title": "Serial",
+        "description": "Receive-only by default. Enable local mode after disconnecting iNext; it enables polling and bypass and boost control through HA entities. Enabling it alone does not change settings. Nano remains master. Serial: 9600/8N1. TCP: transparent gateway; physical TCP has not been tested.",
+        "data": {
+          "name": "Name",
+          "stale_after": "Data freshness threshold (seconds)",
+          "serial_port": "Serial port",
+          "baud": "Baud rate",
+          "stopbits": "Stop bits",
+          "local_polling": "Local polling without iNext",
+          "extended_parameters": "Extended settings",
+          "clock_sync": "Synchronize Nano clock with Home Assistant"
+        }
+      },
+      "tcp": {
+        "title": "TCP",
+        "description": "Receive-only by default. Enable local mode after disconnecting iNext; it enables polling and bypass and boost control through HA entities. Enabling it alone does not change settings. Nano remains master. Serial: 9600/8N1. TCP: transparent gateway; physical TCP has not been tested.",
+        "data": {
+          "name": "Name",
+          "stale_after": "Data freshness threshold (seconds)",
+          "host": "Gateway host",
+          "tcp_port": "TCP port",
+          "connect_timeout": "Connection timeout (seconds)",
+          "local_polling": "Local polling without iNext",
+          "extended_parameters": "Extended settings",
+          "clock_sync": "Synchronize Nano clock with Home Assistant"
+        }
+      }
+    },
+    "error": {
+      "invalid_config": "Check the endpoint and timing parameters."
+    },
+    "abort": {
+      "endpoint_configured": "This endpoint is already configured."
+    },
+    "flow_title": "AERO C14 – Unofficial Home Assistant Integration"
+  },
+  "entity": {
+    "sensor": {
+      "outdoor_temperature": {
+        "name": "Outdoor temperature"
+      },
+      "supply_temperature": {
+        "name": "Supply temperature"
+      },
+      "room_temperature": {
+        "name": "Room temperature"
+      },
+      "room_temperature_setpoint": {
+        "name": "Active room setpoint"
+      },
+      "fan_a_percent": {
+        "name": "Supply fan output"
+      },
+      "fan_b_percent": {
+        "name": "Extract fan output"
+      },
+      "ventilation_requested": {
+        "name": "Requested speed",
+        "state": {
+          "B1": "B1",
+          "B2": "B2",
+          "B3": "B3",
+          "stopped": "Stopped"
+        }
+      },
+      "ventilation_mode_requested": {
+        "name": "Requested ventilation mode",
+        "state": {
+          "B1": "B1",
+          "B3": "B3",
+          "schedule": "Schedule",
+          "B2": "Manual · B2",
+          "stopped": "Stopped",
+          "holiday_schedule": "Holiday schedule"
+        }
+      },
+      "bypass_requested": {
+        "name": "Requested bypass",
+        "state": {
+          "OFF": "Off",
+          "ON": "On",
+          "AUTO": "Automatic"
+        }
+      },
+      "bypass_readback": {
+        "name": "Bypass parameter readback",
+        "state": {
+          "OFF": "Off",
+          "ON": "On",
+          "AUTO": "Automatic"
+        }
+      },
+      "ventilation_mode_readback": {
+        "name": "Ventilation parameter readback",
+        "state": {
+          "B1": "B1",
+          "B3": "B3",
+          "schedule": "Schedule",
+          "B2": "Manual · B2",
+          "stopped": "Stopped",
+          "holiday_schedule": "Holiday schedule"
+        }
+      },
+      "exhaust_temperature": {
+        "name": "Exhaust temperature"
+      },
+      "extract_temperature": {
+        "name": "Extract temperature"
+      },
+      "local_polling_status": {
+        "name": "Local polling",
+        "state": {
+          "disabled": "Disabled",
+          "stopped": "Stopped",
+          "learning": "Observing bus",
+          "ready": "Ready",
+          "polling": "Polling",
+          "blocked": "Blocked: another gateway",
+          "fault": "Suspended after errors"
+        }
+      },
+      "bypass_command_status": {
+        "name": "Bypass command",
+        "state": {
+          "idle": "Idle",
+          "queued": "Queued",
+          "waiting": "Awaiting confirmation",
+          "succeeded": "Confirmed",
+          "failed": "Not confirmed"
+        }
+      },
+      "boost_command_status": {
+        "name": "Boost command",
+        "state": {
+          "idle": "Idle",
+          "queued": "Queued",
+          "waiting": "Awaiting confirmation",
+          "succeeded": "Confirmed",
+          "failed": "Not confirmed"
+        }
+      },
+      "ventilation_command_status": {
+        "name": "Ventilation command",
+        "state": {
+          "idle": "Idle",
+          "queued": "Queued",
+          "waiting": "Awaiting confirmation",
+          "succeeded": "Confirmed",
+          "failed": "Not confirmed"
+        }
+      },
+      "eco_cooling_temperature": {
+        "name": "Eco cooling temperature"
+      },
+      "gwc_winter_threshold": {
+        "name": "Ground heat exchanger winter threshold"
+      },
+      "gwc_summer_threshold": {
+        "name": "Ground heat exchanger summer threshold"
+      },
+      "schedule_command_status": {
+        "name": "Schedule command",
+        "state": {
+          "idle": "Idle",
+          "waiting": "Waiting",
+          "succeeded": "Confirmed",
+          "failed": "Failed"
+        }
+      },
+      "parameter_command_status": {
+        "name": "Parameter operation",
+        "state": {
+          "idle": "Idle",
+          "queued": "Queued",
+          "waiting": "Waiting",
+          "succeeded": "Confirmed",
+          "failed": "Not confirmed"
+        }
+      },
+      "parameter_scan_progress": {
+        "name": "Parameter read completeness"
+      },
+      "comfort_temperature": {
+        "name": "Comfort temperature — readback"
+      },
+      "eco_winter_temperature": {
+        "name": "Eco heating temperature — readback"
+      },
+      "away_temperature": {
+        "name": "Away temperature — readback"
+      },
+      "cooling_stop_temperature": {
+        "name": "Cooling stop temperature — readback"
+      },
+      "winter_start_temperature": {
+        "name": "Winter start temperature — readback"
+      },
+      "winter_stop_temperature": {
+        "name": "Winter stop temperature — readback"
+      },
+      "cooling_start_temperature": {
+        "name": "Cooling start temperature — readback"
+      },
+      "comfort_zone_gear": {
+        "name": "Comfort zone speed — readback"
+      },
+      "eco_zone_gear": {
+        "name": "Eco zone speed — readback"
+      },
+      "away_zone_gear": {
+        "name": "Away/holiday zone speed — readback"
+      },
+      "supply_speed_b1": {
+        "name": "Supply speed B1 — readback"
+      },
+      "supply_speed_b2": {
+        "name": "Supply speed B2 — readback"
+      },
+      "supply_speed_b3": {
+        "name": "Supply speed B3 — readback"
+      },
+      "supply_boost_percent": {
+        "name": "Supply boost output — readback"
+      },
+      "extract_speed_b1": {
+        "name": "Extract speed B1 — readback"
+      },
+      "extract_speed_b2": {
+        "name": "Extract speed B2 — readback"
+      },
+      "extract_speed_b3": {
+        "name": "Extract speed B3 — readback"
+      },
+      "extract_boost_percent": {
+        "name": "Extract boost output — readback"
+      },
+      "supply_temperature_min": {
+        "name": "Minimum supply temperature — readback"
+      },
+      "supply_temperature_max": {
+        "name": "Maximum supply temperature — readback"
+      },
+      "boost_duration": {
+        "name": "Boost duration — readback"
+      },
+      "away_program": {
+        "name": "Away ventilation cycle — readback",
+        "state": {
+          "without_stops": "Without stops",
+          "work30_stop30": "30 min on / 30 min off",
+          "work20_stop40": "20 min on / 40 min off",
+          "work20_stop100": "20 min on / 100 min off"
+        }
+      },
+      "fireplace_speed_correction": {
+        "name": "Fireplace speed correction — readback"
+      },
+      "nano_dehumidification_start": {
+        "name": "Nano dehumidification start — readback"
+      },
+      "nano_dehumidification_stop": {
+        "name": "Nano dehumidification stop — readback"
+      },
+      "nano_humidification_start": {
+        "name": "Nano humidification start — readback"
+      },
+      "nano_humidification_stop": {
+        "name": "Nano humidification stop — readback"
+      },
+      "sensor_speed_correction": {
+        "name": "Sensor speed correction — readback",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "fireplace_mode": {
+        "name": "Fireplace feature enabled",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "away_mode": {
+        "name": "Away mode — readback",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "holiday_mode": {
+        "name": "Holiday mode — readback",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "ventilation_enabled": {
+        "name": "Ventilation enabled — readback",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "ventilation_work_mode": {
+        "name": "Operating mode — readback",
+        "state": {
+          "manual_stop": "Stop",
+          "B1": "B1",
+          "B2": "B2",
+          "B3": "B3",
+          "holiday_schedule": "Holiday schedule",
+          "schedule": "Schedule"
+        }
+      },
+      "thermostat_mode": {
+        "name": "Thermostat mode — readback",
+        "state": {
+          "schedule": "Schedule",
+          "holiday_schedule": "Holiday schedule",
+          "manual": "Manual",
+          "away": "Away"
+        }
+      },
+      "manual_temperature": {
+        "name": "Manual temperature — readback"
+      },
+      "installation_season": {
+        "name": "Season — readback",
+        "state": {
+          "winter": "Winter",
+          "summer": "Summer",
+          "cooling": "Cooling"
+        }
+      },
+      "secondary_heater_control": {
+        "name": "Secondary heater control — readback",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "csf_enabled": {
+        "name": "CSF enabled — readback",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "gwc_mode": {
+        "name": "Ground heat exchanger mode — readback",
+        "state": {
+          "off": "Off",
+          "auto": "Automatic"
+        }
+      },
+      "bypass": {
+        "name": "Bypass mode — readback",
+        "state": {
+          "off": "Off",
+          "auto": "Automatic",
+          "on": "On"
+        }
+      },
+      "boost": {
+        "name": "Boost — readback",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "schedule_monday_1_start": {
+        "name": "Monday — period 1, start"
+      },
+      "schedule_monday_1_end": {
+        "name": "Monday — period 1, end"
+      },
+      "schedule_monday_2_start": {
+        "name": "Monday — period 2, start"
+      },
+      "schedule_monday_2_end": {
+        "name": "Monday — period 2, end"
+      },
+      "schedule_monday_3_start": {
+        "name": "Monday — period 3, start"
+      },
+      "schedule_monday_3_end": {
+        "name": "Monday — period 3, end"
+      },
+      "schedule_tuesday_1_start": {
+        "name": "Tuesday — period 1, start"
+      },
+      "schedule_tuesday_1_end": {
+        "name": "Tuesday — period 1, end"
+      },
+      "schedule_tuesday_2_start": {
+        "name": "Tuesday — period 2, start"
+      },
+      "schedule_tuesday_2_end": {
+        "name": "Tuesday — period 2, end"
+      },
+      "schedule_tuesday_3_start": {
+        "name": "Tuesday — period 3, start"
+      },
+      "schedule_tuesday_3_end": {
+        "name": "Tuesday — period 3, end"
+      },
+      "schedule_wednesday_1_start": {
+        "name": "Wednesday — period 1, start"
+      },
+      "schedule_wednesday_1_end": {
+        "name": "Wednesday — period 1, end"
+      },
+      "schedule_wednesday_2_start": {
+        "name": "Wednesday — period 2, start"
+      },
+      "schedule_wednesday_2_end": {
+        "name": "Wednesday — period 2, end"
+      },
+      "schedule_wednesday_3_start": {
+        "name": "Wednesday — period 3, start"
+      },
+      "schedule_wednesday_3_end": {
+        "name": "Wednesday — period 3, end"
+      },
+      "schedule_thursday_1_start": {
+        "name": "Thursday — period 1, start"
+      },
+      "schedule_thursday_1_end": {
+        "name": "Thursday — period 1, end"
+      },
+      "schedule_thursday_2_start": {
+        "name": "Thursday — period 2, start"
+      },
+      "schedule_thursday_2_end": {
+        "name": "Thursday — period 2, end"
+      },
+      "schedule_thursday_3_start": {
+        "name": "Thursday — period 3, start"
+      },
+      "schedule_thursday_3_end": {
+        "name": "Thursday — period 3, end"
+      },
+      "schedule_friday_1_start": {
+        "name": "Friday — period 1, start"
+      },
+      "schedule_friday_1_end": {
+        "name": "Friday — period 1, end"
+      },
+      "schedule_friday_2_start": {
+        "name": "Friday — period 2, start"
+      },
+      "schedule_friday_2_end": {
+        "name": "Friday — period 2, end"
+      },
+      "schedule_friday_3_start": {
+        "name": "Friday — period 3, start"
+      },
+      "schedule_friday_3_end": {
+        "name": "Friday — period 3, end"
+      },
+      "schedule_saturday_1_start": {
+        "name": "Saturday — period 1, start"
+      },
+      "schedule_saturday_1_end": {
+        "name": "Saturday — period 1, end"
+      },
+      "schedule_saturday_2_start": {
+        "name": "Saturday — period 2, start"
+      },
+      "schedule_saturday_2_end": {
+        "name": "Saturday — period 2, end"
+      },
+      "schedule_saturday_3_start": {
+        "name": "Saturday — period 3, start"
+      },
+      "schedule_saturday_3_end": {
+        "name": "Saturday — period 3, end"
+      },
+      "schedule_sunday_1_start": {
+        "name": "Sunday — period 1, start"
+      },
+      "schedule_sunday_1_end": {
+        "name": "Sunday — period 1, end"
+      },
+      "schedule_sunday_2_start": {
+        "name": "Sunday — period 2, start"
+      },
+      "schedule_sunday_2_end": {
+        "name": "Sunday — period 2, end"
+      },
+      "schedule_sunday_3_start": {
+        "name": "Sunday — period 3, start"
+      },
+      "schedule_sunday_3_end": {
+        "name": "Sunday — period 3, end"
+      },
+      "schedule_holiday_1_start": {
+        "name": "Holiday — period 1, start"
+      },
+      "schedule_holiday_1_end": {
+        "name": "Holiday — period 1, end"
+      },
+      "schedule_holiday_2_start": {
+        "name": "Holiday — period 2, start"
+      },
+      "schedule_holiday_2_end": {
+        "name": "Holiday — period 2, end"
+      },
+      "schedule_holiday_3_start": {
+        "name": "Holiday — period 3, start"
+      },
+      "schedule_holiday_3_end": {
+        "name": "Holiday — period 3, end"
+      },
+      "room_humidity": {
+        "name": "Room humidity"
+      },
+      "fan_runon_duration": {
+        "name": "Fan run-on duration"
+      },
+      "filter_reminder_period": {
+        "name": "Filter reminder interval"
+      },
+      "filter_elapsed_days": {
+        "name": "Days since filter reminder reset"
+      },
+      "filter_days_remaining": {
+        "name": "Days until filter reminder"
+      },
+      "fan_runon_time": {
+        "name": "Fan run-on time setting"
+      },
+      "defrost_temperature": {
+        "name": "Defrost temperature"
+      },
+      "defrost_regulation_band": {
+        "name": "Defrost control band"
+      },
+      "bypass_auto_outdoor_threshold": {
+        "name": "Bypass AUTO outdoor temperature threshold"
+      },
+      "winter_supply_correction_gain": {
+        "name": "Winter supply setpoint correction gain"
+      },
+      "summer_supply_correction_gain": {
+        "name": "Summer/cooling supply setpoint correction gain"
+      },
+      "nano_screensaver": {
+        "name": "Nano screensaver readback",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "nano_label_editing": {
+        "name": "Nano label editing readback",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "nano_button_beep": {
+        "name": "Nano button sound readback",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "nano_ventilation_button": {
+        "name": "Ventilation button on Nano home screen readback",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "nano_alarm_sound": {
+        "name": "Nano alarm sound readback",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "nano_edit_brightness": {
+        "name": "Nano screen brightness level readback"
+      },
+      "nano_standby_brightness": {
+        "name": "Nano standby brightness level readback"
+      },
+      "sensor_spm_thermostat_start": {
+        "name": "SPM — Thermostat start threshold readback"
+      },
+      "sensor_spm_thermostat_stop": {
+        "name": "SPM — Thermostat stop threshold readback"
+      },
+      "sensor_spm_dehumidification_start": {
+        "name": "SPM — Dehumidification start threshold readback"
+      },
+      "sensor_spm_dehumidification_stop": {
+        "name": "SPM — Dehumidification stop threshold readback"
+      },
+      "sensor_spm_humidification_start": {
+        "name": "SPM — Humidification start threshold readback"
+      },
+      "sensor_spm_humidification_stop": {
+        "name": "SPM — Humidification stop threshold readback"
+      },
+      "sensor_spm_led_brightness": {
+        "name": "SPM — LED brightness level readback"
+      },
+      "sensor_nr6_thermostat_start": {
+        "name": "NR6 — Thermostat start threshold readback"
+      },
+      "sensor_nr6_thermostat_stop": {
+        "name": "NR6 — Thermostat stop threshold readback"
+      },
+      "sensor_nr6_dehumidification_start": {
+        "name": "NR6 — Dehumidification start threshold readback"
+      },
+      "sensor_nr6_dehumidification_stop": {
+        "name": "NR6 — Dehumidification stop threshold readback"
+      },
+      "sensor_nr6_humidification_start": {
+        "name": "NR6 — Humidification start threshold readback"
+      },
+      "sensor_nr6_humidification_stop": {
+        "name": "NR6 — Humidification stop threshold readback"
+      },
+      "sensor_nr6_led_brightness": {
+        "name": "NR6 — LED brightness level readback"
+      },
+      "sensor_nr7_thermostat_start": {
+        "name": "NR7 — Thermostat start threshold readback"
+      },
+      "sensor_nr7_thermostat_stop": {
+        "name": "NR7 — Thermostat stop threshold readback"
+      },
+      "sensor_nr7_dehumidification_start": {
+        "name": "NR7 — Dehumidification start threshold readback"
+      },
+      "sensor_nr7_dehumidification_stop": {
+        "name": "NR7 — Dehumidification stop threshold readback"
+      },
+      "sensor_nr7_humidification_start": {
+        "name": "NR7 — Humidification start threshold readback"
+      },
+      "sensor_nr7_humidification_stop": {
+        "name": "NR7 — Humidification stop threshold readback"
+      },
+      "sensor_nr7_led_brightness": {
+        "name": "NR7 — LED brightness level readback"
+      },
+      "sensor_nr8_thermostat_start": {
+        "name": "NR8 — Thermostat start threshold readback"
+      },
+      "sensor_nr8_thermostat_stop": {
+        "name": "NR8 — Thermostat stop threshold readback"
+      },
+      "sensor_nr8_dehumidification_start": {
+        "name": "NR8 — Dehumidification start threshold readback"
+      },
+      "sensor_nr8_dehumidification_stop": {
+        "name": "NR8 — Dehumidification stop threshold readback"
+      },
+      "sensor_nr8_humidification_start": {
+        "name": "NR8 — Humidification start threshold readback"
+      },
+      "sensor_nr8_humidification_stop": {
+        "name": "NR8 — Humidification stop threshold readback"
+      },
+      "sensor_nr8_led_brightness": {
+        "name": "NR8 — LED brightness level readback"
+      },
+      "sensor_nr9_thermostat_start": {
+        "name": "NR9 — Thermostat start threshold readback"
+      },
+      "sensor_nr9_thermostat_stop": {
+        "name": "NR9 — Thermostat stop threshold readback"
+      },
+      "sensor_nr9_dehumidification_start": {
+        "name": "NR9 — Dehumidification start threshold readback"
+      },
+      "sensor_nr9_dehumidification_stop": {
+        "name": "NR9 — Dehumidification stop threshold readback"
+      },
+      "sensor_nr9_humidification_start": {
+        "name": "NR9 — Humidification start threshold readback"
+      },
+      "sensor_nr9_humidification_stop": {
+        "name": "NR9 — Humidification stop threshold readback"
+      },
+      "sensor_nr9_led_brightness": {
+        "name": "NR9 — LED brightness level readback"
+      },
+      "nano_language": {
+        "name": "Nano panel language readback",
+        "state": {
+          "polish": "Polish",
+          "english": "English"
+        }
+      },
+      "sensor_spm_pm1_threshold": {
+        "name": "SPM — PM1 threshold readback"
+      },
+      "sensor_spm_pm25_threshold": {
+        "name": "SPM — PM2.5 threshold readback"
+      },
+      "sensor_spm_pm4_threshold": {
+        "name": "SPM — PM4 threshold readback"
+      },
+      "sensor_spm_pm10_threshold": {
+        "name": "SPM — PM10 threshold readback"
+      },
+      "sensor_spm_pm_hysteresis": {
+        "name": "SPM — PM hysteresis readback"
+      },
+      "nano_thermostat_correction": {
+        "name": "Nano thermostat correction readback"
+      },
+      "nano_thermostat_hysteresis": {
+        "name": "Nano thermostat hysteresis readback"
+      },
+      "nano_main_information": {
+        "name": "Nano main screen information readback",
+        "state": {
+          "room": "Room",
+          "supply": "Supply",
+          "extract": "Extract"
+        }
+      },
+      "nano_simplified_mode": {
+        "name": "Nano simplified interface readback",
+        "state": {
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "nano_season_change_method": {
+        "name": "Nano season change method",
+        "state": {
+          "manual": "Manual",
+          "outdoor_temperature": "Outdoor temperature",
+          "averaged_temperature_1": "Averaged temperature 1",
+          "averaged_temperature_2": "Averaged temperature 2"
+        }
+      },
+      "nano_thermostat_function": {
+        "name": "Nano thermostat function",
+        "state": {
+          "none": "None",
+          "heating": "Heating",
+          "cooling": "Cooling",
+          "heating_cooling": "Heating and cooling"
+        }
+      },
+      "sensor_co2_start": {
+        "name": "CO₂ ventilation start threshold"
+      },
+      "sensor_co2_stop": {
+        "name": "CO₂ ventilation stop threshold"
+      },
+      "sensor_voc_start": {
+        "name": "VOC ventilation start threshold"
+      },
+      "sensor_voc_stop": {
+        "name": "VOC ventilation stop threshold"
+      },
+      "sensor_spm_led_mode": {
+        "name": "SPM LED indication",
+        "state": {
+          "none": "Off",
+          "standby": "Standby",
+          "thermostat": "Thermostat threshold",
+          "standby_thermostat": "Standby and thermostat threshold",
+          "sensors": "Sensor thresholds",
+          "standby_sensors": "Standby and sensor thresholds",
+          "thermostat_sensors": "Both thresholds",
+          "all": "All"
+        }
+      },
+      "sensor_nr6_led_mode": {
+        "name": "NR6 LED indication",
+        "state": {
+          "none": "Off",
+          "standby": "Standby",
+          "thermostat": "Thermostat threshold",
+          "standby_thermostat": "Standby and thermostat threshold",
+          "sensors": "Sensor thresholds",
+          "standby_sensors": "Standby and sensor thresholds",
+          "thermostat_sensors": "Both thresholds",
+          "all": "All"
+        }
+      },
+      "sensor_nr7_led_mode": {
+        "name": "NR7 LED indication",
+        "state": {
+          "none": "Off",
+          "standby": "Standby",
+          "thermostat": "Thermostat threshold",
+          "standby_thermostat": "Standby and thermostat threshold",
+          "sensors": "Sensor thresholds",
+          "standby_sensors": "Standby and sensor thresholds",
+          "thermostat_sensors": "Both thresholds",
+          "all": "All"
+        }
+      },
+      "sensor_nr8_led_mode": {
+        "name": "NR8 LED indication",
+        "state": {
+          "none": "Off",
+          "standby": "Standby",
+          "thermostat": "Thermostat threshold",
+          "standby_thermostat": "Standby and thermostat threshold",
+          "sensors": "Sensor thresholds",
+          "standby_sensors": "Standby and sensor thresholds",
+          "thermostat_sensors": "Both thresholds",
+          "all": "All"
+        }
+      },
+      "sensor_nr9_led_mode": {
+        "name": "NR9 LED indication",
+        "state": {
+          "none": "Off",
+          "standby": "Standby",
+          "thermostat": "Thermostat threshold",
+          "standby_thermostat": "Standby and thermostat threshold",
+          "sensors": "Sensor thresholds",
+          "standby_sensors": "Standby and sensor thresholds",
+          "thermostat_sensors": "Both thresholds",
+          "all": "All"
+        }
+      },
+      "preheater_regulation_band": {
+        "name": "Preheater temperature regulation band"
+      },
+      "postheater_regulation_band": {
+        "name": "Postheater regulation band"
+      },
+      "postheater_integral_gain": {
+        "name": "Postheater integral gain"
+      },
+      "supply_temperature_control_mode": {
+        "name": "Supply temperature control",
+        "state": {
+          "room": "Room temperature",
+          "supply": "Supply temperature",
+          "extract": "Extract temperature"
+        }
+      },
+      "defrost_method": {
+        "name": "Defrost method",
+        "state": {
+          "fan_off": "Fan off",
+          "heater": "Heater",
+          "heater_fan": "Heater and fan",
+          "bypass": "Bypass"
+        }
+      },
+      "preheater_lockout_temperature": {
+        "name": "Preheater lockout temperature"
+      },
+      "minimum_pre_exchanger_temperature": {
+        "name": "Minimum pre-exchanger temperature"
+      },
+      "exchanger_drying_duration": {
+        "name": "Heat exchanger drying duration"
+      },
+      "intake_temperature_as_outdoor": {
+        "name": "Use intake temperature as outdoor temperature"
+      },
+      "relay_r3_function": {
+        "name": "R3 relay function",
+        "state": {
+          "gwc": "GWC",
+          "central_heating": "Central heating",
+          "damper": "Damper",
+          "none": "No function"
+        }
+      },
+      "di2_function": {
+        "name": "DI2 input function",
+        "state": {
+          "boost": "Ventilation boost",
+          "extract": "Extract"
+        }
+      },
+      "bypass_configuration": {
+        "name": "Bypass configuration",
+        "state": {
+          "inactive": "Inactive",
+          "simplified": "Simplified",
+          "standard_room": "Standard room temperature",
+          "standard_extract": "Standard extract temperature"
+        }
+      },
+      "operation_scheme": {
+        "name": "Operating scheme",
+        "state": {
+          "standard": "Standard",
+          "ahu_kit": "AHU kit",
+          "pc": "PC",
+          "rotary": "Rotary exchanger",
+          "rotary_pc": "Rotary exchanger+PC"
+        }
+      },
+      "ex4_d1_function": {
+        "name": "EX4 D1 input function",
+        "state": {
+          "on_off": "On/off input",
+          "alarm": "Alarm input"
+        }
+      },
+      "ex4_d2_function": {
+        "name": "EX4 D2 input function",
+        "state": {
+          "on_off": "On/off input",
+          "alarm": "Alarm input"
+        }
+      },
+      "ex4_t1_function": {
+        "name": "EX4 T1 input function",
+        "state": {
+          "on_off": "On/off input",
+          "temperature": "Temperature"
+        }
+      },
+      "ex4_t2_function": {
+        "name": "EX4 T2 input function",
+        "state": {
+          "on_off": "On/off input",
+          "temperature": "Temperature"
+        }
+      },
+      "ex4_enabled": {
+        "name": "Enable EX4 module support"
+      },
+      "distributor_cooling_enabled": {
+        "name": "Distributor cooling function"
+      },
+      "distributor_pwm_enabled": {
+        "name": "Distributor PWM function"
+      },
+      "nano_background_color": {
+        "name": "Nano background color",
+        "state": {
+          "row_1_column_1": "Row 1, column 1",
+          "row_1_column_2": "Row 1, column 2",
+          "row_1_column_3": "Row 1, column 3",
+          "row_1_column_4": "Row 1, column 4",
+          "row_1_column_5": "Row 1, column 5",
+          "row_1_column_6": "Row 1, column 6",
+          "row_1_column_7": "Row 1, column 7",
+          "row_2_column_1": "Row 2, column 1",
+          "row_2_column_2": "Row 2, column 2",
+          "row_2_column_3": "Row 2, column 3",
+          "row_2_column_4": "Row 2, column 4",
+          "row_2_column_5": "Row 2, column 5",
+          "row_2_column_6": "Row 2, column 6",
+          "row_2_column_7": "Row 2, column 7",
+          "row_3_column_1": "Row 3, column 1",
+          "row_3_column_2": "Row 3, column 2",
+          "row_3_column_3": "Row 3, column 3",
+          "row_3_column_4": "Row 3, column 4",
+          "row_3_column_5": "Row 3, column 5",
+          "row_3_column_6": "Row 3, column 6",
+          "row_3_column_7": "Row 3, column 7",
+          "row_4_column_1": "Row 4, column 1",
+          "row_4_column_2": "Row 4, column 2",
+          "row_4_column_3": "Row 4, column 3",
+          "row_4_column_4": "Row 4, column 4",
+          "row_4_column_5": "Row 4, column 5",
+          "row_4_column_6": "Row 4, column 6"
+        }
+      },
+      "nano_frame_color": {
+        "name": "Nano frame color",
+        "state": {
+          "row_1_column_1": "Row 1, column 1",
+          "row_1_column_2": "Row 1, column 2",
+          "row_1_column_3": "Row 1, column 3",
+          "row_1_column_4": "Row 1, column 4",
+          "row_1_column_5": "Row 1, column 5",
+          "row_1_column_6": "Row 1, column 6",
+          "row_1_column_7": "Row 1, column 7",
+          "row_2_column_1": "Row 2, column 1",
+          "row_2_column_2": "Row 2, column 2",
+          "row_2_column_3": "Row 2, column 3",
+          "row_2_column_4": "Row 2, column 4",
+          "row_2_column_5": "Row 2, column 5",
+          "row_2_column_6": "Row 2, column 6",
+          "row_2_column_7": "Row 2, column 7",
+          "row_3_column_1": "Row 3, column 1",
+          "row_3_column_2": "Row 3, column 2",
+          "row_3_column_3": "Row 3, column 3",
+          "row_3_column_4": "Row 3, column 4",
+          "row_3_column_5": "Row 3, column 5",
+          "row_3_column_6": "Row 3, column 6",
+          "row_3_column_7": "Row 3, column 7",
+          "row_4_column_1": "Row 4, column 1",
+          "row_4_column_2": "Row 4, column 2",
+          "row_4_column_3": "Row 4, column 3",
+          "row_4_column_4": "Row 4, column 4",
+          "row_4_column_5": "Row 4, column 5",
+          "row_4_column_6": "Row 4, column 6"
+        }
+      },
+      "ao3_speed_1": {
+        "name": "AO3 speed 1"
+      },
+      "ao3_speed_2": {
+        "name": "AO3 speed 2"
+      },
+      "ao3_speed_3": {
+        "name": "AO3 speed 3"
+      },
+      "ao3_airing": {
+        "name": "AO3 airing"
+      },
+      "ao3_regulation": {
+        "name": "AO3 regulation"
+      },
+      "heater_priority": {
+        "name": "Heater priority",
+        "state": {
+          "parallel": "Parallel operation",
+          "ahu_priority": "AHU priority"
+        }
+      },
+      "ahu_minimum_outdoor_temperature": {
+        "name": "AHU minimum outdoor temperature"
+      },
+      "ahu_def_reaction": {
+        "name": "AHU defrost input response",
+        "state": {
+          "supply_fan_stop": "Stop supply fan",
+          "supply_fan_half_speed": "Supply fan 50%"
+        }
+      },
+      "ahu_regulation_band": {
+        "name": "AHU heating/cooling regulation band"
+      },
+      "ahu_ki": {
+        "name": "AHU heating/cooling integral gain"
+      },
+      "ahu_heating_start_power": {
+        "name": "AHU minimum heating start power"
+      },
+      "ahu_cooling_start_power": {
+        "name": "AHU minimum cooling start power"
+      },
+      "ahu_maximum_power": {
+        "name": "AHU maximum power"
+      },
+      "ahu_minimum_idle_time": {
+        "name": "AHU minimum idle time"
+      },
+      "ahu_minimum_running_time": {
+        "name": "AHU minimum running time"
+      },
+      "cooling_gear_offset": {
+        "name": "Cooling speed offset"
+      },
+      "ahu_start_delta": {
+        "name": "AHU start temperature difference"
+      },
+      "ahu_heating_stop_configuration": {
+        "name": "AHU heating stop configuration"
+      },
+      "ahu_supply_fan_stop": {
+        "name": "Stop supply fan during AHU operation"
+      },
+      "ao3_percent": {
+        "name": "AO3 output"
+      },
+      "heater_type": {
+        "name": "Heater type",
+        "state": {
+          "glycol": "Glycol",
+          "water": "Water"
+        }
+      },
+      "water_heater_minimum_temperature": {
+        "name": "Water heater minimum T6 temperature"
+      },
+      "heat_pump_cooling": {
+        "name": "Heat pump cooling"
+      },
+      "buffer_t7_control": {
+        "name": "Buffer control using T7"
+      },
+      "nano_button_style": {
+        "name": "Nano button style",
+        "state": {
+          "3d_background": "3D background color",
+          "3d_frame": "3D frame color",
+          "icon_1": "Icon 1 from left",
+          "icon_2": "Icon 2 from left",
+          "icon_3": "Icon 3 from left",
+          "icon_4": "Icon 4 from left",
+          "icon_5": "Icon 5 from left"
+        }
+      },
+      "fireplace_active": {
+        "name": "Fireplace mode"
+      },
+      "air_co2": {
+        "name": "CO₂"
+      },
+      "air_pm25_percent": {
+        "name": "PM2.5 (% of norm)"
+      },
+      "air_pm10_percent": {
+        "name": "PM10 (% of norm)"
+      }
+    },
+    "binary_sensor": {
+      "boost_requested": {
+        "name": "Boost requested"
+      },
+      "boost_active": {
+        "name": "Boost reported"
+      },
+      "bypass_reported_open": {
+        "name": "Bypass reported open"
+      },
+      "boost_readback": {
+        "name": "Boost parameter readback"
+      },
+      "transport_connected": {
+        "name": "Transport connection"
+      },
+      "bus_online": {
+        "name": "Fresh C14 frames"
+      },
+      "aero_online": {
+        "name": "Fresh AERO reports"
+      },
+      "filter_maintenance_due": {
+        "name": "Filter maintenance reminder"
+      },
+      "gwc_reported_active": {
+        "name": "Ground heat exchanger reported active"
+      },
+      "preheater_lockout_temperature_threshold_enabled": {
+        "name": "Preheater lockout temperature threshold enabled"
+      },
+      "minimum_pre_exchanger_temperature_threshold_enabled": {
+        "name": "Minimum pre-exchanger temperature threshold enabled"
+      },
+      "boost_duration_threshold_enabled": {
+        "name": "Ventilation boost time limit enabled"
+      },
+      "ahu_start_delta_threshold_enabled": {
+        "name": "AHU start temperature threshold enabled"
+      }
+    },
+    "switch": {
+      "bypass_control": {
+        "name": "Bypass"
+      },
+      "boost_control": {
+        "name": "Boost"
+      },
+      "sensor_speed_correction": {
+        "name": "Sensor speed correction"
+      },
+      "fireplace_mode": {
+        "name": "Fireplace feature enabled"
+      },
+      "away_mode": {
+        "name": "Away mode"
+      },
+      "holiday_mode": {
+        "name": "Holiday mode"
+      },
+      "ventilation_enabled": {
+        "name": "Ventilation enabled"
+      },
+      "secondary_heater_control": {
+        "name": "Secondary heater control"
+      },
+      "csf_enabled": {
+        "name": "CSF enabled"
+      },
+      "nano_screensaver": {
+        "name": "Nano screensaver"
+      },
+      "nano_label_editing": {
+        "name": "Nano label editing"
+      },
+      "nano_button_beep": {
+        "name": "Nano button sound"
+      },
+      "nano_ventilation_button": {
+        "name": "Ventilation button on Nano home screen"
+      },
+      "nano_alarm_sound": {
+        "name": "Nano alarm sound"
+      },
+      "nano_simplified_mode": {
+        "name": "Nano simplified interface"
+      },
+      "sensor_spm_led_mode_standby": {
+        "name": "SPM LED standby"
+      },
+      "sensor_spm_led_mode_thermostat": {
+        "name": "SPM LED thermostat threshold"
+      },
+      "sensor_spm_led_mode_sensors": {
+        "name": "SPM LED sensor thresholds"
+      },
+      "sensor_nr6_led_mode_standby": {
+        "name": "NR6 LED standby"
+      },
+      "sensor_nr6_led_mode_thermostat": {
+        "name": "NR6 LED thermostat threshold"
+      },
+      "sensor_nr6_led_mode_sensors": {
+        "name": "NR6 LED sensor thresholds"
+      },
+      "sensor_nr7_led_mode_standby": {
+        "name": "NR7 LED standby"
+      },
+      "sensor_nr7_led_mode_thermostat": {
+        "name": "NR7 LED thermostat threshold"
+      },
+      "sensor_nr7_led_mode_sensors": {
+        "name": "NR7 LED sensor thresholds"
+      },
+      "sensor_nr8_led_mode_standby": {
+        "name": "NR8 LED standby"
+      },
+      "sensor_nr8_led_mode_thermostat": {
+        "name": "NR8 LED thermostat threshold"
+      },
+      "sensor_nr8_led_mode_sensors": {
+        "name": "NR8 LED sensor thresholds"
+      },
+      "sensor_nr9_led_mode_standby": {
+        "name": "NR9 LED standby"
+      },
+      "sensor_nr9_led_mode_thermostat": {
+        "name": "NR9 LED thermostat threshold"
+      },
+      "sensor_nr9_led_mode_sensors": {
+        "name": "NR9 LED sensor thresholds"
+      },
+      "intake_temperature_as_outdoor": {
+        "name": "Use intake temperature as outdoor temperature"
+      },
+      "ex4_enabled": {
+        "name": "Enable EX4 module support"
+      },
+      "distributor_cooling_enabled": {
+        "name": "Distributor cooling function"
+      },
+      "distributor_pwm_enabled": {
+        "name": "Distributor PWM function"
+      },
+      "ahu_supply_fan_stop": {
+        "name": "Stop supply fan during AHU operation"
+      },
+      "heat_pump_cooling": {
+        "name": "Heat pump cooling"
+      },
+      "buffer_t7_control": {
+        "name": "Buffer control using T7"
+      },
+      "fireplace_active": {
+        "name": "Fireplace mode"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Operating mode",
+        "state": {
+          "manual": "Manual",
+          "schedule": "Schedule",
+          "holiday_schedule": "Holiday schedule"
+        }
+      },
+      "manual_speed": {
+        "name": "Manual speed",
+        "state": {
+          "B1": "B1",
+          "B2": "B2",
+          "B3": "B3",
+          "stopped": "Stopped"
+        }
+      },
+      "away_program": {
+        "name": "Away ventilation cycle",
+        "state": {
+          "without_stops": "Without stops",
+          "work30_stop30": "30 min on / 30 min off",
+          "work20_stop40": "20 min on / 40 min off",
+          "work20_stop100": "20 min on / 100 min off"
+        }
+      },
+      "thermostat_mode": {
+        "name": "Thermostat mode",
+        "state": {
+          "schedule": "Schedule",
+          "holiday_schedule": "Holiday schedule",
+          "manual": "Manual",
+          "away": "Away"
+        }
+      },
+      "installation_season": {
+        "name": "Season",
+        "state": {
+          "winter": "Winter",
+          "summer": "Summer",
+          "cooling": "Cooling"
+        }
+      },
+      "gwc_mode": {
+        "name": "Ground heat exchanger mode",
+        "state": {
+          "off": "Off",
+          "auto": "Automatic"
+        }
+      },
+      "bypass_mode": {
+        "name": "Bypass mode",
+        "state": {
+          "OFF": "Off",
+          "AUTO": "Automatic",
+          "ON": "On"
+        }
+      },
+      "nano_language": {
+        "name": "Nano panel language",
+        "state": {
+          "polish": "Polish",
+          "english": "English"
+        }
+      },
+      "nano_main_information": {
+        "name": "Nano main screen information",
+        "state": {
+          "room": "Room",
+          "supply": "Supply",
+          "extract": "Extract"
+        }
+      },
+      "nano_season_change_method": {
+        "name": "Nano season change method",
+        "state": {
+          "manual": "Manual",
+          "outdoor_temperature": "Outdoor temperature",
+          "averaged_temperature_1": "Averaged temperature 1",
+          "averaged_temperature_2": "Averaged temperature 2"
+        }
+      },
+      "nano_thermostat_function": {
+        "name": "Nano thermostat function",
+        "state": {
+          "none": "None",
+          "heating": "Heating",
+          "cooling": "Cooling",
+          "heating_cooling": "Heating and cooling"
+        }
+      },
+      "sensor_spm_led_mode": {
+        "name": "SPM LED indication",
+        "state": {
+          "none": "Off",
+          "standby": "Standby",
+          "thermostat": "Thermostat threshold",
+          "standby_thermostat": "Standby and thermostat threshold",
+          "sensors": "Sensor thresholds",
+          "standby_sensors": "Standby and sensor thresholds",
+          "thermostat_sensors": "Both thresholds",
+          "all": "All"
+        }
+      },
+      "sensor_nr6_led_mode": {
+        "name": "NR6 LED indication",
+        "state": {
+          "none": "Off",
+          "standby": "Standby",
+          "thermostat": "Thermostat threshold",
+          "standby_thermostat": "Standby and thermostat threshold",
+          "sensors": "Sensor thresholds",
+          "standby_sensors": "Standby and sensor thresholds",
+          "thermostat_sensors": "Both thresholds",
+          "all": "All"
+        }
+      },
+      "sensor_nr7_led_mode": {
+        "name": "NR7 LED indication",
+        "state": {
+          "none": "Off",
+          "standby": "Standby",
+          "thermostat": "Thermostat threshold",
+          "standby_thermostat": "Standby and thermostat threshold",
+          "sensors": "Sensor thresholds",
+          "standby_sensors": "Standby and sensor thresholds",
+          "thermostat_sensors": "Both thresholds",
+          "all": "All"
+        }
+      },
+      "sensor_nr8_led_mode": {
+        "name": "NR8 LED indication",
+        "state": {
+          "none": "Off",
+          "standby": "Standby",
+          "thermostat": "Thermostat threshold",
+          "standby_thermostat": "Standby and thermostat threshold",
+          "sensors": "Sensor thresholds",
+          "standby_sensors": "Standby and sensor thresholds",
+          "thermostat_sensors": "Both thresholds",
+          "all": "All"
+        }
+      },
+      "sensor_nr9_led_mode": {
+        "name": "NR9 LED indication",
+        "state": {
+          "none": "Off",
+          "standby": "Standby",
+          "thermostat": "Thermostat threshold",
+          "standby_thermostat": "Standby and thermostat threshold",
+          "sensors": "Sensor thresholds",
+          "standby_sensors": "Standby and sensor thresholds",
+          "thermostat_sensors": "Both thresholds",
+          "all": "All"
+        }
+      },
+      "supply_temperature_control_mode": {
+        "name": "Supply temperature control",
+        "state": {
+          "room": "Room temperature",
+          "supply": "Supply temperature",
+          "extract": "Extract temperature"
+        }
+      },
+      "defrost_method": {
+        "name": "Defrost method",
+        "state": {
+          "fan_off": "Fan off",
+          "heater": "Heater",
+          "heater_fan": "Heater and fan",
+          "bypass": "Bypass"
+        }
+      },
+      "relay_r3_function": {
+        "name": "R3 relay function",
+        "state": {
+          "gwc": "GWC",
+          "central_heating": "Central heating",
+          "damper": "Damper",
+          "none": "No function"
+        }
+      },
+      "di2_function": {
+        "name": "DI2 input function",
+        "state": {
+          "boost": "Ventilation boost",
+          "extract": "Extract"
+        }
+      },
+      "bypass_configuration": {
+        "name": "Bypass configuration",
+        "state": {
+          "inactive": "Inactive",
+          "simplified": "Simplified",
+          "standard_room": "Standard room temperature",
+          "standard_extract": "Standard extract temperature"
+        }
+      },
+      "operation_scheme": {
+        "name": "Operating scheme",
+        "state": {
+          "standard": "Standard",
+          "ahu_kit": "AHU kit",
+          "pc": "PC",
+          "rotary": "Rotary exchanger",
+          "rotary_pc": "Rotary exchanger+PC"
+        }
+      },
+      "ex4_d1_function": {
+        "name": "EX4 D1 input function",
+        "state": {
+          "on_off": "On/off input",
+          "alarm": "Alarm input"
+        }
+      },
+      "ex4_d2_function": {
+        "name": "EX4 D2 input function",
+        "state": {
+          "on_off": "On/off input",
+          "alarm": "Alarm input"
+        }
+      },
+      "ex4_t1_function": {
+        "name": "EX4 T1 input function",
+        "state": {
+          "on_off": "On/off input",
+          "temperature": "Temperature"
+        }
+      },
+      "ex4_t2_function": {
+        "name": "EX4 T2 input function",
+        "state": {
+          "on_off": "On/off input",
+          "temperature": "Temperature"
+        }
+      },
+      "nano_background_color": {
+        "name": "Nano background color",
+        "state": {
+          "row_1_column_1": "Row 1, column 1",
+          "row_1_column_2": "Row 1, column 2",
+          "row_1_column_3": "Row 1, column 3",
+          "row_1_column_4": "Row 1, column 4",
+          "row_1_column_5": "Row 1, column 5",
+          "row_1_column_6": "Row 1, column 6",
+          "row_1_column_7": "Row 1, column 7",
+          "row_2_column_1": "Row 2, column 1",
+          "row_2_column_2": "Row 2, column 2",
+          "row_2_column_3": "Row 2, column 3",
+          "row_2_column_4": "Row 2, column 4",
+          "row_2_column_5": "Row 2, column 5",
+          "row_2_column_6": "Row 2, column 6",
+          "row_2_column_7": "Row 2, column 7",
+          "row_3_column_1": "Row 3, column 1",
+          "row_3_column_2": "Row 3, column 2",
+          "row_3_column_3": "Row 3, column 3",
+          "row_3_column_4": "Row 3, column 4",
+          "row_3_column_5": "Row 3, column 5",
+          "row_3_column_6": "Row 3, column 6",
+          "row_3_column_7": "Row 3, column 7",
+          "row_4_column_1": "Row 4, column 1",
+          "row_4_column_2": "Row 4, column 2",
+          "row_4_column_3": "Row 4, column 3",
+          "row_4_column_4": "Row 4, column 4",
+          "row_4_column_5": "Row 4, column 5",
+          "row_4_column_6": "Row 4, column 6"
+        }
+      },
+      "nano_frame_color": {
+        "name": "Nano frame color",
+        "state": {
+          "row_1_column_1": "Row 1, column 1",
+          "row_1_column_2": "Row 1, column 2",
+          "row_1_column_3": "Row 1, column 3",
+          "row_1_column_4": "Row 1, column 4",
+          "row_1_column_5": "Row 1, column 5",
+          "row_1_column_6": "Row 1, column 6",
+          "row_1_column_7": "Row 1, column 7",
+          "row_2_column_1": "Row 2, column 1",
+          "row_2_column_2": "Row 2, column 2",
+          "row_2_column_3": "Row 2, column 3",
+          "row_2_column_4": "Row 2, column 4",
+          "row_2_column_5": "Row 2, column 5",
+          "row_2_column_6": "Row 2, column 6",
+          "row_2_column_7": "Row 2, column 7",
+          "row_3_column_1": "Row 3, column 1",
+          "row_3_column_2": "Row 3, column 2",
+          "row_3_column_3": "Row 3, column 3",
+          "row_3_column_4": "Row 3, column 4",
+          "row_3_column_5": "Row 3, column 5",
+          "row_3_column_6": "Row 3, column 6",
+          "row_3_column_7": "Row 3, column 7",
+          "row_4_column_1": "Row 4, column 1",
+          "row_4_column_2": "Row 4, column 2",
+          "row_4_column_3": "Row 4, column 3",
+          "row_4_column_4": "Row 4, column 4",
+          "row_4_column_5": "Row 4, column 5",
+          "row_4_column_6": "Row 4, column 6"
+        }
+      },
+      "heater_priority": {
+        "name": "Heater priority",
+        "state": {
+          "parallel": "Parallel operation",
+          "ahu_priority": "AHU priority"
+        }
+      },
+      "ahu_def_reaction": {
+        "name": "AHU defrost input response",
+        "state": {
+          "supply_fan_stop": "Stop supply fan",
+          "supply_fan_half_speed": "Supply fan 50%"
+        }
+      },
+      "heater_type": {
+        "name": "Heater type",
+        "state": {
+          "glycol": "Glycol",
+          "water": "Water"
+        }
+      },
+      "nano_button_style": {
+        "name": "Nano button style",
+        "state": {
+          "3d_background": "3D background color",
+          "3d_frame": "3D frame color",
+          "icon_1": "Icon 1 from left",
+          "icon_2": "Icon 2 from left",
+          "icon_3": "Icon 3 from left",
+          "icon_4": "Icon 4 from left",
+          "icon_5": "Icon 5 from left"
+        }
+      }
+    },
+    "number": {
+      "comfort_temperature": {
+        "name": "Comfort temperature"
+      },
+      "eco_winter_temperature": {
+        "name": "Eco heating temperature"
+      },
+      "away_temperature": {
+        "name": "Away temperature"
+      },
+      "cooling_stop_temperature": {
+        "name": "Cooling stop temperature"
+      },
+      "winter_start_temperature": {
+        "name": "Winter start temperature"
+      },
+      "winter_stop_temperature": {
+        "name": "Winter stop temperature"
+      },
+      "cooling_start_temperature": {
+        "name": "Cooling start temperature"
+      },
+      "comfort_zone_gear": {
+        "name": "Comfort zone speed"
+      },
+      "eco_zone_gear": {
+        "name": "Eco zone speed"
+      },
+      "away_zone_gear": {
+        "name": "Away/holiday zone speed"
+      },
+      "supply_speed_b1": {
+        "name": "Supply speed B1"
+      },
+      "supply_speed_b2": {
+        "name": "Supply speed B2"
+      },
+      "supply_speed_b3": {
+        "name": "Supply speed B3"
+      },
+      "supply_boost_percent": {
+        "name": "Supply boost output"
+      },
+      "extract_speed_b1": {
+        "name": "Extract speed B1"
+      },
+      "extract_speed_b2": {
+        "name": "Extract speed B2"
+      },
+      "extract_speed_b3": {
+        "name": "Extract speed B3"
+      },
+      "extract_boost_percent": {
+        "name": "Extract boost output"
+      },
+      "supply_temperature_min": {
+        "name": "Minimum supply temperature"
+      },
+      "supply_temperature_max": {
+        "name": "Maximum supply temperature"
+      },
+      "boost_duration": {
+        "name": "Boost duration"
+      },
+      "fireplace_speed_correction": {
+        "name": "Fireplace speed correction"
+      },
+      "nano_dehumidification_start": {
+        "name": "Nano dehumidification start"
+      },
+      "nano_dehumidification_stop": {
+        "name": "Nano dehumidification stop"
+      },
+      "nano_humidification_start": {
+        "name": "Nano humidification start"
+      },
+      "nano_humidification_stop": {
+        "name": "Nano humidification stop"
+      },
+      "manual_temperature": {
+        "name": "Manual temperature"
+      },
+      "eco_cooling_temperature": {
+        "name": "Eco cooling temperature"
+      },
+      "gwc_winter_threshold": {
+        "name": "Ground heat exchanger winter threshold"
+      },
+      "gwc_summer_threshold": {
+        "name": "Ground heat exchanger summer threshold"
+      },
+      "filter_reminder_period": {
+        "name": "Filter reminder interval"
+      },
+      "fan_runon_time": {
+        "name": "Fan run-on time setting"
+      },
+      "defrost_temperature": {
+        "name": "Defrost temperature"
+      },
+      "defrost_regulation_band": {
+        "name": "Defrost control band"
+      },
+      "bypass_auto_outdoor_threshold": {
+        "name": "Bypass AUTO outdoor temperature threshold"
+      },
+      "winter_supply_correction_gain": {
+        "name": "Winter supply setpoint correction gain"
+      },
+      "summer_supply_correction_gain": {
+        "name": "Summer/cooling supply setpoint correction gain"
+      },
+      "nano_edit_brightness": {
+        "name": "Nano screen brightness level"
+      },
+      "nano_standby_brightness": {
+        "name": "Nano standby brightness level"
+      },
+      "sensor_spm_thermostat_start": {
+        "name": "SPM — Thermostat start threshold"
+      },
+      "sensor_spm_thermostat_stop": {
+        "name": "SPM — Thermostat stop threshold"
+      },
+      "sensor_spm_dehumidification_start": {
+        "name": "SPM — Dehumidification start threshold"
+      },
+      "sensor_spm_dehumidification_stop": {
+        "name": "SPM — Dehumidification stop threshold"
+      },
+      "sensor_spm_humidification_start": {
+        "name": "SPM — Humidification start threshold"
+      },
+      "sensor_spm_humidification_stop": {
+        "name": "SPM — Humidification stop threshold"
+      },
+      "sensor_spm_led_brightness": {
+        "name": "SPM — LED brightness level"
+      },
+      "sensor_nr6_thermostat_start": {
+        "name": "NR6 — Thermostat start threshold"
+      },
+      "sensor_nr6_thermostat_stop": {
+        "name": "NR6 — Thermostat stop threshold"
+      },
+      "sensor_nr6_dehumidification_start": {
+        "name": "NR6 — Dehumidification start threshold"
+      },
+      "sensor_nr6_dehumidification_stop": {
+        "name": "NR6 — Dehumidification stop threshold"
+      },
+      "sensor_nr6_humidification_start": {
+        "name": "NR6 — Humidification start threshold"
+      },
+      "sensor_nr6_humidification_stop": {
+        "name": "NR6 — Humidification stop threshold"
+      },
+      "sensor_nr6_led_brightness": {
+        "name": "NR6 — LED brightness level"
+      },
+      "sensor_nr7_thermostat_start": {
+        "name": "NR7 — Thermostat start threshold"
+      },
+      "sensor_nr7_thermostat_stop": {
+        "name": "NR7 — Thermostat stop threshold"
+      },
+      "sensor_nr7_dehumidification_start": {
+        "name": "NR7 — Dehumidification start threshold"
+      },
+      "sensor_nr7_dehumidification_stop": {
+        "name": "NR7 — Dehumidification stop threshold"
+      },
+      "sensor_nr7_humidification_start": {
+        "name": "NR7 — Humidification start threshold"
+      },
+      "sensor_nr7_humidification_stop": {
+        "name": "NR7 — Humidification stop threshold"
+      },
+      "sensor_nr7_led_brightness": {
+        "name": "NR7 — LED brightness level"
+      },
+      "sensor_nr8_thermostat_start": {
+        "name": "NR8 — Thermostat start threshold"
+      },
+      "sensor_nr8_thermostat_stop": {
+        "name": "NR8 — Thermostat stop threshold"
+      },
+      "sensor_nr8_dehumidification_start": {
+        "name": "NR8 — Dehumidification start threshold"
+      },
+      "sensor_nr8_dehumidification_stop": {
+        "name": "NR8 — Dehumidification stop threshold"
+      },
+      "sensor_nr8_humidification_start": {
+        "name": "NR8 — Humidification start threshold"
+      },
+      "sensor_nr8_humidification_stop": {
+        "name": "NR8 — Humidification stop threshold"
+      },
+      "sensor_nr8_led_brightness": {
+        "name": "NR8 — LED brightness level"
+      },
+      "sensor_nr9_thermostat_start": {
+        "name": "NR9 — Thermostat start threshold"
+      },
+      "sensor_nr9_thermostat_stop": {
+        "name": "NR9 — Thermostat stop threshold"
+      },
+      "sensor_nr9_dehumidification_start": {
+        "name": "NR9 — Dehumidification start threshold"
+      },
+      "sensor_nr9_dehumidification_stop": {
+        "name": "NR9 — Dehumidification stop threshold"
+      },
+      "sensor_nr9_humidification_start": {
+        "name": "NR9 — Humidification start threshold"
+      },
+      "sensor_nr9_humidification_stop": {
+        "name": "NR9 — Humidification stop threshold"
+      },
+      "sensor_nr9_led_brightness": {
+        "name": "NR9 — LED brightness level"
+      },
+      "sensor_spm_pm1_threshold": {
+        "name": "SPM — PM1 threshold"
+      },
+      "sensor_spm_pm25_threshold": {
+        "name": "SPM — PM2.5 threshold"
+      },
+      "sensor_spm_pm4_threshold": {
+        "name": "SPM — PM4 threshold"
+      },
+      "sensor_spm_pm10_threshold": {
+        "name": "SPM — PM10 threshold"
+      },
+      "sensor_spm_pm_hysteresis": {
+        "name": "SPM — PM hysteresis"
+      },
+      "nano_thermostat_correction": {
+        "name": "Nano thermostat correction"
+      },
+      "nano_thermostat_hysteresis": {
+        "name": "Nano thermostat hysteresis"
+      },
+      "sensor_co2_start": {
+        "name": "CO₂ ventilation start threshold"
+      },
+      "sensor_co2_stop": {
+        "name": "CO₂ ventilation stop threshold"
+      },
+      "sensor_voc_start": {
+        "name": "VOC ventilation start threshold"
+      },
+      "sensor_voc_stop": {
+        "name": "VOC ventilation stop threshold"
+      },
+      "preheater_regulation_band": {
+        "name": "Preheater temperature regulation band"
+      },
+      "postheater_regulation_band": {
+        "name": "Postheater regulation band"
+      },
+      "postheater_integral_gain": {
+        "name": "Postheater integral gain"
+      },
+      "preheater_lockout_temperature": {
+        "name": "Preheater lockout temperature"
+      },
+      "minimum_pre_exchanger_temperature": {
+        "name": "Minimum pre-exchanger temperature"
+      },
+      "exchanger_drying_duration": {
+        "name": "Heat exchanger drying duration"
+      },
+      "ao3_speed_1": {
+        "name": "AO3 speed 1"
+      },
+      "ao3_speed_2": {
+        "name": "AO3 speed 2"
+      },
+      "ao3_speed_3": {
+        "name": "AO3 speed 3"
+      },
+      "ao3_airing": {
+        "name": "AO3 airing"
+      },
+      "ao3_regulation": {
+        "name": "AO3 regulation"
+      },
+      "ahu_minimum_outdoor_temperature": {
+        "name": "AHU minimum outdoor temperature"
+      },
+      "ahu_regulation_band": {
+        "name": "AHU heating/cooling regulation band"
+      },
+      "ahu_ki": {
+        "name": "AHU heating/cooling integral gain"
+      },
+      "ahu_heating_start_power": {
+        "name": "AHU minimum heating start power"
+      },
+      "ahu_cooling_start_power": {
+        "name": "AHU minimum cooling start power"
+      },
+      "ahu_maximum_power": {
+        "name": "AHU maximum power"
+      },
+      "ahu_minimum_idle_time": {
+        "name": "AHU minimum idle time"
+      },
+      "ahu_minimum_running_time": {
+        "name": "AHU minimum running time"
+      },
+      "cooling_gear_offset": {
+        "name": "Cooling speed offset"
+      },
+      "ahu_start_delta": {
+        "name": "AHU start temperature difference"
+      },
+      "ahu_heating_stop_configuration": {
+        "name": "AHU heating stop configuration"
+      },
+      "water_heater_minimum_temperature": {
+        "name": "Water heater minimum T6 temperature"
+      }
+    },
+    "button": {
+      "filter_reset": {
+        "name": "Reset filter reminder counter"
+      },
+      "clock_sync": {
+        "name": "Synchronize clock with HA"
+      }
+    }
+  },
+  "services": {
+    "start_capture": {
+      "name": "Start raw RX capture",
+      "description": "Use the existing receiver, at most 15 minutes and 10 MiB. Limit of 5 files; older files are never deleted automatically.",
+      "fields": {
+        "entry_id": {
+          "name": "Config entry ID",
+          "description": "Optional when only one device is loaded."
+        },
+        "duration": {
+          "name": "Capture duration"
+        }
+      }
+    },
+    "stop_capture": {
+      "name": "Stop raw RX capture",
+      "description": "Finish the file while normal reception continues.",
+      "fields": {
+        "entry_id": {
+          "name": "Config entry ID"
+        }
+      }
+    },
+    "get_schedule": {
+      "name": "Read Nano schedule",
+      "description": "Returns all eight days, including Holiday, from received parameter data.",
+      "fields": {
+        "entry_id": {
+          "name": "Config entry ID"
+        },
+        "refresh_day": {
+          "name": "Refresh day from device",
+          "description": "Optional priority read without changing settings; requires extended local mode."
+        }
+      }
+    },
+    "set_schedule_period": {
+      "name": "Set Nano schedule period",
+      "description": "Writes one period using separately confirmed boundaries. Not atomic; a failure may leave a partial change. Requires extended local mode.",
+      "fields": {
+        "entry_id": {
+          "name": "Config entry ID"
+        },
+        "day": {
+          "name": "Day"
+        },
+        "period": {
+          "name": "Period (1–3)"
+        },
+        "start": {
+          "name": "Start (HH:MM)"
+        },
+        "end": {
+          "name": "End (HH:MM)"
+        }
+      }
+    },
+    "refresh_parameters": {
+      "name": "Refresh parameters",
+      "description": "Priority reads of allowlisted keys, without setting writes. Keys sharing one batch are read once.",
+      "fields": {
+        "entry_id": {
+          "name": "Config entry ID"
+        },
+        "keys": {
+          "name": "Parameter keys"
+        }
+      }
+    },
+    "user_control": {
+      "name": "User control",
+      "description": "Choose a mode, gear or boost preset. Each write must be confirmed; failure stops the sequence.",
+      "fields": {
+        "entity_id": {
+          "name": "Device entity"
+        },
+        "action": {
+          "name": "Control"
+        },
+        "value": {
+          "name": "Value"
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "capture_choose_entry": {
+      "message": "Choose one loaded integration entry."
+    },
+    "capture_unavailable": {
+      "message": "The receiver is stopped or a capture is already running."
+    },
+    "capture_io_error": {
+      "message": "Could not open or finish the capture file. Check diagnostics."
+    },
+    "capture_quota_reached": {
+      "message": "Capture storage quota reached. Export and remove older captures."
+    },
+    "command_busy": {
+      "message": "Another command is still running."
+    },
+    "control_unavailable": {
+      "message": "Control requires active local mode and fresh device data."
+    },
+    "command_not_confirmed": {
+      "message": "The device did not confirm the change. Check its current state before trying again."
+    },
+    "manual_mode_required": {
+      "message": "Select manual mode first."
+    },
+    "manual_gear_unknown": {
+      "message": "The gear for entering manual mode is unknown. Select a manual gear on Nano."
+    },
+    "invalid_schedule": {
+      "message": "Use same-day quarter-hour intervals; end may be 24:00. 00:00/00:00 disables a period."
+    },
+    "schedule_not_confirmed": {
+      "message": "Schedule update was not fully confirmed. Some boundaries may have changed; read the current schedule before retrying."
+    },
+    "invalid_parameter_value": {
+      "message": "Use an allowed option or a value matching the setting range and step."
+    }
+  }
+}

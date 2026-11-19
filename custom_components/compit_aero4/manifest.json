@@ -1,0 +1,19 @@
+{
+  "domain": "compit_aero4",
+  "name": "AERO C14 – Unofficial Home Assistant Integration",
+  "codeowners": [
+    "@piotremis"
+  ],
+  "config_flow": true,
+  "integration_type": "device",
+  "iot_class": "local_push",
+  "requirements": [
+    "pyserial==3.5"
+  ],
+  "version": "1.0.0",
+  "documentation": "https://github.com/piotremis/aero-c14",
+  "issue_tracker": "https://github.com/piotremis/aero-c14/issues",
+  "after_dependencies": [
+    "frontend"
+  ]
+}

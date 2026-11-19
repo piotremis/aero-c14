@@ -1,0 +1,2086 @@
+{
+  "title": "AERO C14 – Unofficial Home Assistant Integration",
+  "config": {
+    "step": {
+      "user": {
+        "title": "AERO C14 – Unofficial Home Assistant Integration",
+        "description": "Połączenie lokalne Serial lub TCP/RS485. Odpytywanie bez iNext jest opcjonalne i domyślnie wyłączone.",
+        "menu_options": {
+          "serial": "USB / RS485 (Serial)",
+          "tcp": "TCP / RS485"
+        }
+      },
+      "reconfigure": {
+        "title": "Zmień połączenie",
+        "menu_options": {
+          "serial": "USB / RS485 (Serial)",
+          "tcp": "TCP / RS485"
+        }
+      },
+      "serial": {
+        "title": "Serial",
+        "description": "Domyślnie tylko odbiór. Tryb lokalny włączaj po odłączeniu iNext; umożliwia odpytywanie i sterowanie bypassem i wietrzeniem z encji HA. Samo włączenie nie zmienia nastaw. Nano nadal działa jako master. Serial: 9600/8N1. TCP: przezroczysta bramka; fizyczny TCP jeszcze nieprzetestowany.",
+        "data": {
+          "name": "Nazwa",
+          "stale_after": "Próg świeżości danych (sekundy)",
+          "serial_port": "Port szeregowy",
+          "baud": "Prędkość transmisji",
+          "stopbits": "Bity stopu",
+          "local_polling": "Lokalne odpytywanie bez iNext",
+          "extended_parameters": "Rozszerzone nastawy",
+          "clock_sync": "Synchronizuj zegar Nano z Home Assistant"
+        }
+      },
+      "tcp": {
+        "title": "TCP",
+        "description": "Domyślnie tylko odbiór. Tryb lokalny włączaj po odłączeniu iNext; umożliwia odpytywanie i sterowanie bypassem i wietrzeniem z encji HA. Samo włączenie nie zmienia nastaw. Nano nadal działa jako master. Serial: 9600/8N1. TCP: przezroczysta bramka; fizyczny TCP jeszcze nieprzetestowany.",
+        "data": {
+          "name": "Nazwa",
+          "stale_after": "Próg świeżości danych (sekundy)",
+          "host": "Adres bramki",
+          "tcp_port": "Port TCP",
+          "connect_timeout": "Timeout połączenia (sekundy)",
+          "local_polling": "Lokalne odpytywanie bez iNext",
+          "extended_parameters": "Rozszerzone nastawy",
+          "clock_sync": "Synchronizuj zegar Nano z Home Assistant"
+        }
+      }
+    },
+    "error": {
+      "invalid_config": "Sprawdź port, adres i parametry czasu."
+    },
+    "abort": {
+      "endpoint_configured": "To połączenie jest już skonfigurowane."
+    },
+    "flow_title": "AERO C14 – Unofficial Home Assistant Integration"
+  },
+  "entity": {
+    "sensor": {
+      "outdoor_temperature": {
+        "name": "Temperatura czerpni"
+      },
+      "supply_temperature": {
+        "name": "Temperatura nawiewu"
+      },
+      "room_temperature": {
+        "name": "Temperatura pokojowa"
+      },
+      "room_temperature_setpoint": {
+        "name": "Aktywna nastawa pokojowa"
+      },
+      "fan_a_percent": {
+        "name": "Wydajność nawiewu"
+      },
+      "fan_b_percent": {
+        "name": "Wydajność wywiewu"
+      },
+      "ventilation_requested": {
+        "name": "Żądany bieg",
+        "state": {
+          "B1": "B1",
+          "B2": "B2",
+          "B3": "B3",
+          "stopped": "Zatrzymana"
+        }
+      },
+      "ventilation_mode_requested": {
+        "name": "Żądany tryb wentylacji",
+        "state": {
+          "B1": "B1",
+          "B3": "B3",
+          "schedule": "Harmonogram",
+          "B2": "Ręcznie · B2",
+          "stopped": "Stop",
+          "holiday_schedule": "Harmonogram święto"
+        }
+      },
+      "bypass_requested": {
+        "name": "Żądany bypass",
+        "state": {
+          "OFF": "Wyłączony",
+          "ON": "Włączony",
+          "AUTO": "Automatyczny"
+        }
+      },
+      "bypass_readback": {
+        "name": "Odczyt parametru bypassu",
+        "state": {
+          "OFF": "Wyłączony",
+          "ON": "Włączony",
+          "AUTO": "Automatyczny"
+        }
+      },
+      "ventilation_mode_readback": {
+        "name": "Odczyt parametru wentylacji",
+        "state": {
+          "B1": "B1",
+          "B3": "B3",
+          "schedule": "Harmonogram",
+          "B2": "Ręcznie · B2",
+          "stopped": "Stop",
+          "holiday_schedule": "Harmonogram święto"
+        }
+      },
+      "exhaust_temperature": {
+        "name": "Temperatura wyrzutni"
+      },
+      "extract_temperature": {
+        "name": "Temperatura wywiewu"
+      },
+      "local_polling_status": {
+        "name": "Lokalne odpytywanie",
+        "state": {
+          "disabled": "Wyłączone",
+          "stopped": "Zatrzymane",
+          "learning": "Obserwacja magistrali",
+          "ready": "Gotowe",
+          "polling": "Odpytywanie",
+          "blocked": "Zablokowane: inna bramka",
+          "fault": "Wstrzymane po błędach"
+        }
+      },
+      "bypass_command_status": {
+        "name": "Sterowanie bypassem",
+        "state": {
+          "idle": "Brak polecenia",
+          "queued": "Oczekiwanie na wysłanie",
+          "waiting": "Oczekiwanie na potwierdzenie",
+          "succeeded": "Potwierdzone",
+          "failed": "Niepotwierdzone"
+        }
+      },
+      "boost_command_status": {
+        "name": "Sterowanie wietrzeniem",
+        "state": {
+          "idle": "Brak polecenia",
+          "queued": "Oczekiwanie na wysłanie",
+          "waiting": "Oczekiwanie na potwierdzenie",
+          "succeeded": "Potwierdzone",
+          "failed": "Niepotwierdzone"
+        }
+      },
+      "ventilation_command_status": {
+        "name": "Sterowanie wentylacją",
+        "state": {
+          "idle": "Brak polecenia",
+          "queued": "Oczekiwanie na wysłanie",
+          "waiting": "Oczekiwanie na potwierdzenie",
+          "succeeded": "Potwierdzone",
+          "failed": "Niepotwierdzone"
+        }
+      },
+      "eco_cooling_temperature": {
+        "name": "Temperatura ECO chłodzenie"
+      },
+      "gwc_winter_threshold": {
+        "name": "Próg GWC zima"
+      },
+      "gwc_summer_threshold": {
+        "name": "Próg GWC lato"
+      },
+      "schedule_command_status": {
+        "name": "Zapis harmonogramu",
+        "state": {
+          "idle": "Bezczynny",
+          "waiting": "Oczekiwanie",
+          "succeeded": "Potwierdzony",
+          "failed": "Niepotwierdzony"
+        }
+      },
+      "parameter_command_status": {
+        "name": "Operacja parametrów",
+        "state": {
+          "idle": "Bezczynny",
+          "queued": "W kolejce",
+          "waiting": "Oczekiwanie",
+          "succeeded": "Potwierdzono",
+          "failed": "Niepotwierdzony"
+        }
+      },
+      "parameter_scan_progress": {
+        "name": "Kompletność odczytu parametrów"
+      },
+      "comfort_temperature": {
+        "name": "Temperatura Komfort — odczyt"
+      },
+      "eco_winter_temperature": {
+        "name": "Temperatura ECO ogrzewanie — odczyt"
+      },
+      "away_temperature": {
+        "name": "Temperatura poza domem — odczyt"
+      },
+      "cooling_stop_temperature": {
+        "name": "Temperatura wyłączenia chłodzenia — odczyt"
+      },
+      "winter_start_temperature": {
+        "name": "Temperatura włączenia zimy — odczyt"
+      },
+      "winter_stop_temperature": {
+        "name": "Temperatura wyłączenia zimy — odczyt"
+      },
+      "cooling_start_temperature": {
+        "name": "Temperatura włączenia chłodzenia — odczyt"
+      },
+      "comfort_zone_gear": {
+        "name": "Bieg strefy Komfort — odczyt"
+      },
+      "eco_zone_gear": {
+        "name": "Bieg strefy ECO — odczyt"
+      },
+      "away_zone_gear": {
+        "name": "Bieg strefy poza domem / urlop — odczyt"
+      },
+      "supply_speed_b1": {
+        "name": "Nawiew wydajność B1 — odczyt"
+      },
+      "supply_speed_b2": {
+        "name": "Nawiew wydajność B2 — odczyt"
+      },
+      "supply_speed_b3": {
+        "name": "Nawiew wydajność B3 — odczyt"
+      },
+      "supply_boost_percent": {
+        "name": "Nawiew wydajność wietrzenia — odczyt"
+      },
+      "extract_speed_b1": {
+        "name": "Wywiew wydajność B1 — odczyt"
+      },
+      "extract_speed_b2": {
+        "name": "Wywiew wydajność B2 — odczyt"
+      },
+      "extract_speed_b3": {
+        "name": "Wywiew wydajność B3 — odczyt"
+      },
+      "extract_boost_percent": {
+        "name": "Wywiew wydajność wietrzenia — odczyt"
+      },
+      "supply_temperature_min": {
+        "name": "Minimalna temperatura nawiewu — odczyt"
+      },
+      "supply_temperature_max": {
+        "name": "Maksymalna temperatura nawiewu — odczyt"
+      },
+      "boost_duration": {
+        "name": "Czas wietrzenia — odczyt"
+      },
+      "away_program": {
+        "name": "Cykl wentylacji poza domem — odczyt",
+        "state": {
+          "without_stops": "Bez przerw",
+          "work30_stop30": "30 min pracy / 30 min przerwy",
+          "work20_stop40": "20 min pracy / 40 min przerwy",
+          "work20_stop100": "20 min pracy / 100 min przerwy"
+        }
+      },
+      "fireplace_speed_correction": {
+        "name": "Korekta wydajności kominek — odczyt"
+      },
+      "nano_dehumidification_start": {
+        "name": "Nano próg włączenia osuszania — odczyt"
+      },
+      "nano_dehumidification_stop": {
+        "name": "Nano próg wyłączenia osuszania — odczyt"
+      },
+      "nano_humidification_start": {
+        "name": "Nano próg włączenia nawilżania — odczyt"
+      },
+      "nano_humidification_stop": {
+        "name": "Nano próg wyłączenia nawilżania — odczyt"
+      },
+      "sensor_speed_correction": {
+        "name": "Korekta wydajności od sensorów — odczyt",
+        "state": {
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "fireplace_mode": {
+        "name": "Zezwolenie na pracę z kominkiem",
+        "state": {
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "away_mode": {
+        "name": "Poza domem — odczyt",
+        "state": {
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "holiday_mode": {
+        "name": "Urlop — odczyt",
+        "state": {
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "ventilation_enabled": {
+        "name": "Włączenie wentylacji — odczyt",
+        "state": {
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "ventilation_work_mode": {
+        "name": "Tryb pracy — odczyt",
+        "state": {
+          "manual_stop": "Stop",
+          "B1": "B1",
+          "B2": "B2",
+          "B3": "B3",
+          "holiday_schedule": "Harmonogram święto",
+          "schedule": "Harmonogram"
+        }
+      },
+      "thermostat_mode": {
+        "name": "Tryb termostatu — odczyt",
+        "state": {
+          "schedule": "Harmonogram",
+          "holiday_schedule": "Harmonogram święto",
+          "manual": "Ręczny",
+          "away": "Poza domem"
+        }
+      },
+      "manual_temperature": {
+        "name": "Temperatura ręczna — odczyt"
+      },
+      "installation_season": {
+        "name": "Sezon — odczyt",
+        "state": {
+          "winter": "Zima",
+          "summer": "Lato",
+          "cooling": "Chłodzenie"
+        }
+      },
+      "secondary_heater_control": {
+        "name": "Sterowanie nagrzewnicą wtórną — odczyt",
+        "state": {
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "csf_enabled": {
+        "name": "Włączenie CSF — odczyt",
+        "state": {
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "gwc_mode": {
+        "name": "Tryb GWC — odczyt",
+        "state": {
+          "off": "Wyłączony",
+          "auto": "Automatyczny"
+        }
+      },
+      "bypass": {
+        "name": "Tryb bypassu — odczyt",
+        "state": {
+          "off": "Wyłączony",
+          "auto": "Automatyczny",
+          "on": "Włączony"
+        }
+      },
+      "boost": {
+        "name": "Wietrzenie — odczyt",
+        "state": {
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "schedule_monday_1_start": {
+        "name": "Poniedziałek — przedział 1, początek"
+      },
+      "schedule_monday_1_end": {
+        "name": "Poniedziałek — przedział 1, koniec"
+      },
+      "schedule_monday_2_start": {
+        "name": "Poniedziałek — przedział 2, początek"
+      },
+      "schedule_monday_2_end": {
+        "name": "Poniedziałek — przedział 2, koniec"
+      },
+      "schedule_monday_3_start": {
+        "name": "Poniedziałek — przedział 3, początek"
+      },
+      "schedule_monday_3_end": {
+        "name": "Poniedziałek — przedział 3, koniec"
+      },
+      "schedule_tuesday_1_start": {
+        "name": "Wtorek — przedział 1, początek"
+      },
+      "schedule_tuesday_1_end": {
+        "name": "Wtorek — przedział 1, koniec"
+      },
+      "schedule_tuesday_2_start": {
+        "name": "Wtorek — przedział 2, początek"
+      },
+      "schedule_tuesday_2_end": {
+        "name": "Wtorek — przedział 2, koniec"
+      },
+      "schedule_tuesday_3_start": {
+        "name": "Wtorek — przedział 3, początek"
+      },
+      "schedule_tuesday_3_end": {
+        "name": "Wtorek — przedział 3, koniec"
+      },
+      "schedule_wednesday_1_start": {
+        "name": "Środa — przedział 1, początek"
+      },
+      "schedule_wednesday_1_end": {
+        "name": "Środa — przedział 1, koniec"
+      },
+      "schedule_wednesday_2_start": {
+        "name": "Środa — przedział 2, początek"
+      },
+      "schedule_wednesday_2_end": {
+        "name": "Środa — przedział 2, koniec"
+      },
+      "schedule_wednesday_3_start": {
+        "name": "Środa — przedział 3, początek"
+      },
+      "schedule_wednesday_3_end": {
+        "name": "Środa — przedział 3, koniec"
+      },
+      "schedule_thursday_1_start": {
+        "name": "Czwartek — przedział 1, początek"
+      },
+      "schedule_thursday_1_end": {
+        "name": "Czwartek — przedział 1, koniec"
+      },
+      "schedule_thursday_2_start": {
+        "name": "Czwartek — przedział 2, początek"
+      },
+      "schedule_thursday_2_end": {
+        "name": "Czwartek — przedział 2, koniec"
+      },
+      "schedule_thursday_3_start": {
+        "name": "Czwartek — przedział 3, początek"
+      },
+      "schedule_thursday_3_end": {
+        "name": "Czwartek — przedział 3, koniec"
+      },
+      "schedule_friday_1_start": {
+        "name": "Piątek — przedział 1, początek"
+      },
+      "schedule_friday_1_end": {
+        "name": "Piątek — przedział 1, koniec"
+      },
+      "schedule_friday_2_start": {
+        "name": "Piątek — przedział 2, początek"
+      },
+      "schedule_friday_2_end": {
+        "name": "Piątek — przedział 2, koniec"
+      },
+      "schedule_friday_3_start": {
+        "name": "Piątek — przedział 3, początek"
+      },
+      "schedule_friday_3_end": {
+        "name": "Piątek — przedział 3, koniec"
+      },
+      "schedule_saturday_1_start": {
+        "name": "Sobota — przedział 1, początek"
+      },
+      "schedule_saturday_1_end": {
+        "name": "Sobota — przedział 1, koniec"
+      },
+      "schedule_saturday_2_start": {
+        "name": "Sobota — przedział 2, początek"
+      },
+      "schedule_saturday_2_end": {
+        "name": "Sobota — przedział 2, koniec"
+      },
+      "schedule_saturday_3_start": {
+        "name": "Sobota — przedział 3, początek"
+      },
+      "schedule_saturday_3_end": {
+        "name": "Sobota — przedział 3, koniec"
+      },
+      "schedule_sunday_1_start": {
+        "name": "Niedziela — przedział 1, początek"
+      },
+      "schedule_sunday_1_end": {
+        "name": "Niedziela — przedział 1, koniec"
+      },
+      "schedule_sunday_2_start": {
+        "name": "Niedziela — przedział 2, początek"
+      },
+      "schedule_sunday_2_end": {
+        "name": "Niedziela — przedział 2, koniec"
+      },
+      "schedule_sunday_3_start": {
+        "name": "Niedziela — przedział 3, początek"
+      },
+      "schedule_sunday_3_end": {
+        "name": "Niedziela — przedział 3, koniec"
+      },
+      "schedule_holiday_1_start": {
+        "name": "Święto — przedział 1, początek"
+      },
+      "schedule_holiday_1_end": {
+        "name": "Święto — przedział 1, koniec"
+      },
+      "schedule_holiday_2_start": {
+        "name": "Święto — przedział 2, początek"
+      },
+      "schedule_holiday_2_end": {
+        "name": "Święto — przedział 2, koniec"
+      },
+      "schedule_holiday_3_start": {
+        "name": "Święto — przedział 3, początek"
+      },
+      "schedule_holiday_3_end": {
+        "name": "Święto — przedział 3, koniec"
+      },
+      "room_humidity": {
+        "name": "Wilgotność pokojowa"
+      },
+      "fan_runon_duration": {
+        "name": "Czas wybiegu wentylatorów"
+      },
+      "filter_reminder_period": {
+        "name": "Okres przypomnienia o filtrze"
+      },
+      "filter_elapsed_days": {
+        "name": "Dni od resetu przypomnienia filtra"
+      },
+      "filter_days_remaining": {
+        "name": "Dni do przypomnienia o filtrze"
+      },
+      "fan_runon_time": {
+        "name": "Nastawa czasu wybiegu wentylatorów"
+      },
+      "defrost_temperature": {
+        "name": "Temperatura rozmrażania"
+      },
+      "defrost_regulation_band": {
+        "name": "Zakres regulacji rozmrażania"
+      },
+      "bypass_auto_outdoor_threshold": {
+        "name": "Temperatura zezwolenia na bypass AUTO"
+      },
+      "winter_supply_correction_gain": {
+        "name": "Wzmocnienie korekty nastawy nawiewu zima"
+      },
+      "summer_supply_correction_gain": {
+        "name": "Wzmocnienie korekty nastawy nawiewu lato/chłodzenie"
+      },
+      "nano_screensaver": {
+        "name": "Wygaszacz ekranu — odczyt",
+        "state": {
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "nano_label_editing": {
+        "name": "Zezwolenie na edycję napisów — odczyt",
+        "state": {
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "nano_button_beep": {
+        "name": "Sygnał przycisków — odczyt",
+        "state": {
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "nano_ventilation_button": {
+        "name": "ON-OFF wentylacji na pierwszym ekranie — odczyt",
+        "state": {
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "nano_alarm_sound": {
+        "name": "Sygnał alarmu — odczyt",
+        "state": {
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "nano_edit_brightness": {
+        "name": "Jasność podświetlenia edycja — odczyt"
+      },
+      "nano_standby_brightness": {
+        "name": "Jasność podświetlenia czuwanie — odczyt"
+      },
+      "sensor_spm_thermostat_start": {
+        "name": "SPM — Termostat — próg włączenia — odczyt"
+      },
+      "sensor_spm_thermostat_stop": {
+        "name": "SPM — Termostat — próg wyłączenia — odczyt"
+      },
+      "sensor_spm_dehumidification_start": {
+        "name": "SPM — Osuszanie — próg włączenia — odczyt"
+      },
+      "sensor_spm_dehumidification_stop": {
+        "name": "SPM — Osuszanie — próg wyłączenia — odczyt"
+      },
+      "sensor_spm_humidification_start": {
+        "name": "SPM — Nawilżanie — próg włączenia — odczyt"
+      },
+      "sensor_spm_humidification_stop": {
+        "name": "SPM — Nawilżanie — próg wyłączenia — odczyt"
+      },
+      "sensor_spm_led_brightness": {
+        "name": "SPM — Jasność LED — odczyt"
+      },
+      "sensor_nr6_thermostat_start": {
+        "name": "NR6 — Termostat — próg włączenia — odczyt"
+      },
+      "sensor_nr6_thermostat_stop": {
+        "name": "NR6 — Termostat — próg wyłączenia — odczyt"
+      },
+      "sensor_nr6_dehumidification_start": {
+        "name": "NR6 — Osuszanie — próg włączenia — odczyt"
+      },
+      "sensor_nr6_dehumidification_stop": {
+        "name": "NR6 — Osuszanie — próg wyłączenia — odczyt"
+      },
+      "sensor_nr6_humidification_start": {
+        "name": "NR6 — Nawilżanie — próg włączenia — odczyt"
+      },
+      "sensor_nr6_humidification_stop": {
+        "name": "NR6 — Nawilżanie — próg wyłączenia — odczyt"
+      },
+      "sensor_nr6_led_brightness": {
+        "name": "NR6 — Jasność LED — odczyt"
+      },
+      "sensor_nr7_thermostat_start": {
+        "name": "NR7 — Termostat — próg włączenia — odczyt"
+      },
+      "sensor_nr7_thermostat_stop": {
+        "name": "NR7 — Termostat — próg wyłączenia — odczyt"
+      },
+      "sensor_nr7_dehumidification_start": {
+        "name": "NR7 — Osuszanie — próg włączenia — odczyt"
+      },
+      "sensor_nr7_dehumidification_stop": {
+        "name": "NR7 — Osuszanie — próg wyłączenia — odczyt"
+      },
+      "sensor_nr7_humidification_start": {
+        "name": "NR7 — Nawilżanie — próg włączenia — odczyt"
+      },
+      "sensor_nr7_humidification_stop": {
+        "name": "NR7 — Nawilżanie — próg wyłączenia — odczyt"
+      },
+      "sensor_nr7_led_brightness": {
+        "name": "NR7 — Jasność LED — odczyt"
+      },
+      "sensor_nr8_thermostat_start": {
+        "name": "NR8 — Termostat — próg włączenia — odczyt"
+      },
+      "sensor_nr8_thermostat_stop": {
+        "name": "NR8 — Termostat — próg wyłączenia — odczyt"
+      },
+      "sensor_nr8_dehumidification_start": {
+        "name": "NR8 — Osuszanie — próg włączenia — odczyt"
+      },
+      "sensor_nr8_dehumidification_stop": {
+        "name": "NR8 — Osuszanie — próg wyłączenia — odczyt"
+      },
+      "sensor_nr8_humidification_start": {
+        "name": "NR8 — Nawilżanie — próg włączenia — odczyt"
+      },
+      "sensor_nr8_humidification_stop": {
+        "name": "NR8 — Nawilżanie — próg wyłączenia — odczyt"
+      },
+      "sensor_nr8_led_brightness": {
+        "name": "NR8 — Jasność LED — odczyt"
+      },
+      "sensor_nr9_thermostat_start": {
+        "name": "NR9 — Termostat — próg włączenia — odczyt"
+      },
+      "sensor_nr9_thermostat_stop": {
+        "name": "NR9 — Termostat — próg wyłączenia — odczyt"
+      },
+      "sensor_nr9_dehumidification_start": {
+        "name": "NR9 — Osuszanie — próg włączenia — odczyt"
+      },
+      "sensor_nr9_dehumidification_stop": {
+        "name": "NR9 — Osuszanie — próg wyłączenia — odczyt"
+      },
+      "sensor_nr9_humidification_start": {
+        "name": "NR9 — Nawilżanie — próg włączenia — odczyt"
+      },
+      "sensor_nr9_humidification_stop": {
+        "name": "NR9 — Nawilżanie — próg wyłączenia — odczyt"
+      },
+      "sensor_nr9_led_brightness": {
+        "name": "NR9 — Jasność LED — odczyt"
+      },
+      "nano_language": {
+        "name": "Język panelu Nano — odczyt",
+        "state": {
+          "polish": "Polski",
+          "english": "Angielski"
+        }
+      },
+      "sensor_spm_pm1_threshold": {
+        "name": "SPM — Próg PM1 — odczyt"
+      },
+      "sensor_spm_pm25_threshold": {
+        "name": "SPM — Próg PM2.5 — odczyt"
+      },
+      "sensor_spm_pm4_threshold": {
+        "name": "SPM — Próg PM4 — odczyt"
+      },
+      "sensor_spm_pm10_threshold": {
+        "name": "SPM — Próg PM10 — odczyt"
+      },
+      "sensor_spm_pm_hysteresis": {
+        "name": "SPM — Histereza PM — odczyt"
+      },
+      "nano_thermostat_correction": {
+        "name": "Korekta termostatu — odczyt"
+      },
+      "nano_thermostat_hysteresis": {
+        "name": "Histereza termostatu — odczyt"
+      },
+      "nano_main_information": {
+        "name": "Informacja główna — odczyt",
+        "state": {
+          "room": "Pomieszczenia",
+          "supply": "Nawiewu",
+          "extract": "Wywiewu"
+        }
+      },
+      "nano_simplified_mode": {
+        "name": "Obsługa panelu w trybie uproszczonym — odczyt",
+        "state": {
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "nano_season_change_method": {
+        "name": "Metoda zmiany sezonu Nano",
+        "state": {
+          "manual": "Ręcznie",
+          "outdoor_temperature": "Według temperatury zewnętrznej",
+          "averaged_temperature_1": "Według temperatury uśrednionej 1",
+          "averaged_temperature_2": "Według temperatury uśrednionej 2"
+        }
+      },
+      "nano_thermostat_function": {
+        "name": "Funkcja termostatu Nano",
+        "state": {
+          "none": "Brak",
+          "heating": "Ogrzewanie",
+          "cooling": "Chłodzenie",
+          "heating_cooling": "Ogrzewanie i chłodzenie"
+        }
+      },
+      "sensor_co2_start": {
+        "name": "Próg CO₂ włączenia wietrzenia"
+      },
+      "sensor_co2_stop": {
+        "name": "Próg CO₂ wyłączenia wietrzenia"
+      },
+      "sensor_voc_start": {
+        "name": "Próg VOC włączenia wietrzenia"
+      },
+      "sensor_voc_stop": {
+        "name": "Próg VOC wyłączenia wietrzenia"
+      },
+      "sensor_spm_led_mode": {
+        "name": "SPM sygnalizacja LED",
+        "state": {
+          "none": "Wyłączone",
+          "standby": "Czuwanie",
+          "thermostat": "Próg termostatu",
+          "standby_thermostat": "Czuwanie i próg termostatu",
+          "sensors": "Próg sensorów",
+          "standby_sensors": "Czuwanie i próg sensorów",
+          "thermostat_sensors": "Oba progi",
+          "all": "Wszystkie"
+        }
+      },
+      "sensor_nr6_led_mode": {
+        "name": "NR6 sygnalizacja LED",
+        "state": {
+          "none": "Wyłączone",
+          "standby": "Czuwanie",
+          "thermostat": "Próg termostatu",
+          "standby_thermostat": "Czuwanie i próg termostatu",
+          "sensors": "Próg sensorów",
+          "standby_sensors": "Czuwanie i próg sensorów",
+          "thermostat_sensors": "Oba progi",
+          "all": "Wszystkie"
+        }
+      },
+      "sensor_nr7_led_mode": {
+        "name": "NR7 sygnalizacja LED",
+        "state": {
+          "none": "Wyłączone",
+          "standby": "Czuwanie",
+          "thermostat": "Próg termostatu",
+          "standby_thermostat": "Czuwanie i próg termostatu",
+          "sensors": "Próg sensorów",
+          "standby_sensors": "Czuwanie i próg sensorów",
+          "thermostat_sensors": "Oba progi",
+          "all": "Wszystkie"
+        }
+      },
+      "sensor_nr8_led_mode": {
+        "name": "NR8 sygnalizacja LED",
+        "state": {
+          "none": "Wyłączone",
+          "standby": "Czuwanie",
+          "thermostat": "Próg termostatu",
+          "standby_thermostat": "Czuwanie i próg termostatu",
+          "sensors": "Próg sensorów",
+          "standby_sensors": "Czuwanie i próg sensorów",
+          "thermostat_sensors": "Oba progi",
+          "all": "Wszystkie"
+        }
+      },
+      "sensor_nr9_led_mode": {
+        "name": "NR9 sygnalizacja LED",
+        "state": {
+          "none": "Wyłączone",
+          "standby": "Czuwanie",
+          "thermostat": "Próg termostatu",
+          "standby_thermostat": "Czuwanie i próg termostatu",
+          "sensors": "Próg sensorów",
+          "standby_sensors": "Czuwanie i próg sensorów",
+          "thermostat_sensors": "Oba progi",
+          "all": "Wszystkie"
+        }
+      },
+      "preheater_regulation_band": {
+        "name": "Zakres regulacji temperatury przed rekuperatorem"
+      },
+      "postheater_regulation_band": {
+        "name": "Zakres regulacji nagrzewnicy wtórnej"
+      },
+      "postheater_integral_gain": {
+        "name": "Współczynnik KI nagrzewnicy wtórnej"
+      },
+      "supply_temperature_control_mode": {
+        "name": "Regulacja temperatury nawiewu",
+        "state": {
+          "room": "Według temperatury pomieszczenia",
+          "supply": "Według temperatury nawiewu",
+          "extract": "Według temperatury wywiewu"
+        }
+      },
+      "defrost_method": {
+        "name": "Metoda rozmrażania",
+        "state": {
+          "fan_off": "Wyłączenie wentylatora",
+          "heater": "Nagrzewnica",
+          "heater_fan": "Nagrzewnica i wentylator",
+          "bypass": "Bypass"
+        }
+      },
+      "preheater_lockout_temperature": {
+        "name": "Temperatura blokady nagrzewnicy wstępnej"
+      },
+      "minimum_pre_exchanger_temperature": {
+        "name": "Minimalna temperatura przed rekuperatorem"
+      },
+      "exchanger_drying_duration": {
+        "name": "Czas osuszania rekuperatora"
+      },
+      "intake_temperature_as_outdoor": {
+        "name": "Temperatura czerpni jako temperatura zewnętrzna"
+      },
+      "relay_r3_function": {
+        "name": "Funkcja przekaźnika R3",
+        "state": {
+          "gwc": "GWC",
+          "central_heating": "C.O. ogrzewanie",
+          "damper": "Przepustnica",
+          "none": "Bez funkcji"
+        }
+      },
+      "di2_function": {
+        "name": "Funkcja wejścia DI2",
+        "state": {
+          "boost": "Wietrzenie",
+          "extract": "Wyciąg"
+        }
+      },
+      "bypass_configuration": {
+        "name": "Konfiguracja bypass",
+        "state": {
+          "inactive": "Nieaktywny",
+          "simplified": "Uproszczony",
+          "standard_room": "Standard Tpom",
+          "standard_extract": "Standard Twyw"
+        }
+      },
+      "operation_scheme": {
+        "name": "Schemat pracy",
+        "state": {
+          "standard": "Standard",
+          "ahu_kit": "AHU kit",
+          "pc": "PC",
+          "rotary": "Wym. obrotowy",
+          "rotary_pc": "Wym. obrotowy+PC"
+        }
+      },
+      "ex4_d1_function": {
+        "name": "EX4 D1 funkcja wejścia",
+        "state": {
+          "on_off": "Wejście ON/OFF",
+          "alarm": "Wejście alarm"
+        }
+      },
+      "ex4_d2_function": {
+        "name": "EX4 D2 funkcja wejścia",
+        "state": {
+          "on_off": "Wejście ON/OFF",
+          "alarm": "Wejście alarm"
+        }
+      },
+      "ex4_t1_function": {
+        "name": "EX4 T1 funkcja wejścia",
+        "state": {
+          "on_off": "Wejście ON/OFF",
+          "temperature": "Temperatura"
+        }
+      },
+      "ex4_t2_function": {
+        "name": "EX4 T2 funkcja wejścia",
+        "state": {
+          "on_off": "Wejście ON/OFF",
+          "temperature": "Temperatura"
+        }
+      },
+      "ex4_enabled": {
+        "name": "Zezwolenie na obsługę modułu EX4"
+      },
+      "distributor_cooling_enabled": {
+        "name": "Rozdzielacz — funkcja chłodzenia"
+      },
+      "distributor_pwm_enabled": {
+        "name": "Rozdzielacz — funkcja PWM"
+      },
+      "nano_background_color": {
+        "name": "Kolor tła Nano",
+        "state": {
+          "row_1_column_1": "Rząd 1, kolumna 1",
+          "row_1_column_2": "Rząd 1, kolumna 2",
+          "row_1_column_3": "Rząd 1, kolumna 3",
+          "row_1_column_4": "Rząd 1, kolumna 4",
+          "row_1_column_5": "Rząd 1, kolumna 5",
+          "row_1_column_6": "Rząd 1, kolumna 6",
+          "row_1_column_7": "Rząd 1, kolumna 7",
+          "row_2_column_1": "Rząd 2, kolumna 1",
+          "row_2_column_2": "Rząd 2, kolumna 2",
+          "row_2_column_3": "Rząd 2, kolumna 3",
+          "row_2_column_4": "Rząd 2, kolumna 4",
+          "row_2_column_5": "Rząd 2, kolumna 5",
+          "row_2_column_6": "Rząd 2, kolumna 6",
+          "row_2_column_7": "Rząd 2, kolumna 7",
+          "row_3_column_1": "Rząd 3, kolumna 1",
+          "row_3_column_2": "Rząd 3, kolumna 2",
+          "row_3_column_3": "Rząd 3, kolumna 3",
+          "row_3_column_4": "Rząd 3, kolumna 4",
+          "row_3_column_5": "Rząd 3, kolumna 5",
+          "row_3_column_6": "Rząd 3, kolumna 6",
+          "row_3_column_7": "Rząd 3, kolumna 7",
+          "row_4_column_1": "Rząd 4, kolumna 1",
+          "row_4_column_2": "Rząd 4, kolumna 2",
+          "row_4_column_3": "Rząd 4, kolumna 3",
+          "row_4_column_4": "Rząd 4, kolumna 4",
+          "row_4_column_5": "Rząd 4, kolumna 5",
+          "row_4_column_6": "Rząd 4, kolumna 6"
+        }
+      },
+      "nano_frame_color": {
+        "name": "Kolor ramki Nano",
+        "state": {
+          "row_1_column_1": "Rząd 1, kolumna 1",
+          "row_1_column_2": "Rząd 1, kolumna 2",
+          "row_1_column_3": "Rząd 1, kolumna 3",
+          "row_1_column_4": "Rząd 1, kolumna 4",
+          "row_1_column_5": "Rząd 1, kolumna 5",
+          "row_1_column_6": "Rząd 1, kolumna 6",
+          "row_1_column_7": "Rząd 1, kolumna 7",
+          "row_2_column_1": "Rząd 2, kolumna 1",
+          "row_2_column_2": "Rząd 2, kolumna 2",
+          "row_2_column_3": "Rząd 2, kolumna 3",
+          "row_2_column_4": "Rząd 2, kolumna 4",
+          "row_2_column_5": "Rząd 2, kolumna 5",
+          "row_2_column_6": "Rząd 2, kolumna 6",
+          "row_2_column_7": "Rząd 2, kolumna 7",
+          "row_3_column_1": "Rząd 3, kolumna 1",
+          "row_3_column_2": "Rząd 3, kolumna 2",
+          "row_3_column_3": "Rząd 3, kolumna 3",
+          "row_3_column_4": "Rząd 3, kolumna 4",
+          "row_3_column_5": "Rząd 3, kolumna 5",
+          "row_3_column_6": "Rząd 3, kolumna 6",
+          "row_3_column_7": "Rząd 3, kolumna 7",
+          "row_4_column_1": "Rząd 4, kolumna 1",
+          "row_4_column_2": "Rząd 4, kolumna 2",
+          "row_4_column_3": "Rząd 4, kolumna 3",
+          "row_4_column_4": "Rząd 4, kolumna 4",
+          "row_4_column_5": "Rząd 4, kolumna 5",
+          "row_4_column_6": "Rząd 4, kolumna 6"
+        }
+      },
+      "ao3_speed_1": {
+        "name": "AO3 bieg 1"
+      },
+      "ao3_speed_2": {
+        "name": "AO3 bieg 2"
+      },
+      "ao3_speed_3": {
+        "name": "AO3 bieg 3"
+      },
+      "ao3_airing": {
+        "name": "AO3 wietrzenie"
+      },
+      "ao3_regulation": {
+        "name": "Regulacja AO3"
+      },
+      "heater_priority": {
+        "name": "Priorytet nagrzewnic",
+        "state": {
+          "parallel": "Praca równoległa",
+          "ahu_priority": "Priorytet AHU"
+        }
+      },
+      "ahu_minimum_outdoor_temperature": {
+        "name": "Minimalna temperatura zezwolenia pracy AHU"
+      },
+      "ahu_def_reaction": {
+        "name": "Reakcja na DEF z AHU",
+        "state": {
+          "supply_fan_stop": "Zatrzymanie nawiewu",
+          "supply_fan_half_speed": "Nawiew 50%"
+        }
+      },
+      "ahu_regulation_band": {
+        "name": "Zakres regulacji nagrzewania/chłodzenia AHU"
+      },
+      "ahu_ki": {
+        "name": "KI nagrzewania/chłodzenia AHU"
+      },
+      "ahu_heating_start_power": {
+        "name": "Minimalna moc startu AHU grzanie"
+      },
+      "ahu_cooling_start_power": {
+        "name": "Minimalna moc startu AHU chłodzenie"
+      },
+      "ahu_maximum_power": {
+        "name": "Maksymalna moc AHU"
+      },
+      "ahu_minimum_idle_time": {
+        "name": "Minimalny czas postoju AHU"
+      },
+      "ahu_minimum_running_time": {
+        "name": "Minimalny czas pracy AHU"
+      },
+      "cooling_gear_offset": {
+        "name": "Korekta biegu w trybie chłodzenia"
+      },
+      "ahu_start_delta": {
+        "name": "Delta startu AHU"
+      },
+      "ahu_heating_stop_configuration": {
+        "name": "Konfiguracja zatrzymania grzania AHU"
+      },
+      "ahu_supply_fan_stop": {
+        "name": "Wyłączenie nawiewu podczas pracy AHU"
+      },
+      "ao3_percent": {
+        "name": "Wyjście AO3"
+      },
+      "heater_type": {
+        "name": "Typ nagrzewnicy",
+        "state": {
+          "glycol": "Glikolowa",
+          "water": "Wodna"
+        }
+      },
+      "water_heater_minimum_temperature": {
+        "name": "Minimalna temperatura T6 nagrzewnicy wodnej"
+      },
+      "heat_pump_cooling": {
+        "name": "Realizacja chłodzenia przez PC"
+      },
+      "buffer_t7_control": {
+        "name": "Kontrola bufora czujnikiem T7"
+      },
+      "nano_button_style": {
+        "name": "Styl przycisków Nano",
+        "state": {
+          "3d_background": "3D w kolorze tła",
+          "3d_frame": "3D w kolorze ramki",
+          "icon_1": "Ikona 1 od lewej",
+          "icon_2": "Ikona 2 od lewej",
+          "icon_3": "Ikona 3 od lewej",
+          "icon_4": "Ikona 4 od lewej",
+          "icon_5": "Ikona 5 od lewej"
+        }
+      },
+      "fireplace_active": {
+        "name": "Praca z kominkiem"
+      },
+      "air_co2": {
+        "name": "CO₂"
+      },
+      "air_pm25_percent": {
+        "name": "PM2,5 (% normy)"
+      },
+      "air_pm10_percent": {
+        "name": "PM10 (% normy)"
+      }
+    },
+    "binary_sensor": {
+      "boost_requested": {
+        "name": "Żądanie wietrzenia"
+      },
+      "boost_active": {
+        "name": "Raportowane wietrzenie"
+      },
+      "bypass_reported_open": {
+        "name": "Raportowane otwarcie bypassu"
+      },
+      "boost_readback": {
+        "name": "Odczyt parametru wietrzenia"
+      },
+      "transport_connected": {
+        "name": "Połączenie transportu"
+      },
+      "bus_online": {
+        "name": "Aktualne ramki C14"
+      },
+      "aero_online": {
+        "name": "Aktualne raporty AERO"
+      },
+      "filter_maintenance_due": {
+        "name": "Przypomnienie czyszczenia filtra"
+      },
+      "gwc_reported_active": {
+        "name": "Raportowane załączenie GWC"
+      },
+      "preheater_lockout_temperature_threshold_enabled": {
+        "name": "Temperatura blokady nagrzewnicy wstępnej — próg włączony"
+      },
+      "minimum_pre_exchanger_temperature_threshold_enabled": {
+        "name": "Minimalna temperatura przed rekuperatorem — próg włączony"
+      },
+      "boost_duration_threshold_enabled": {
+        "name": "Limit czasu wietrzenia włączony"
+      },
+      "ahu_start_delta_threshold_enabled": {
+        "name": "Próg delty startu AHU aktywny"
+      }
+    },
+    "switch": {
+      "bypass_control": {
+        "name": "Bypass"
+      },
+      "boost_control": {
+        "name": "Wietrzenie"
+      },
+      "sensor_speed_correction": {
+        "name": "Korekta wydajności od sensorów"
+      },
+      "fireplace_mode": {
+        "name": "Zezwolenie na pracę z kominkiem"
+      },
+      "away_mode": {
+        "name": "Poza domem"
+      },
+      "holiday_mode": {
+        "name": "Urlop"
+      },
+      "ventilation_enabled": {
+        "name": "Włączenie wentylacji"
+      },
+      "secondary_heater_control": {
+        "name": "Sterowanie nagrzewnicą wtórną"
+      },
+      "csf_enabled": {
+        "name": "Włączenie CSF"
+      },
+      "nano_screensaver": {
+        "name": "Wygaszacz ekranu"
+      },
+      "nano_label_editing": {
+        "name": "Zezwolenie na edycję napisów"
+      },
+      "nano_button_beep": {
+        "name": "Sygnał przycisków"
+      },
+      "nano_ventilation_button": {
+        "name": "ON-OFF wentylacji na pierwszym ekranie"
+      },
+      "nano_alarm_sound": {
+        "name": "Sygnał alarmu"
+      },
+      "nano_simplified_mode": {
+        "name": "Obsługa panelu w trybie uproszczonym"
+      },
+      "sensor_spm_led_mode_standby": {
+        "name": "SPM LED czuwanie"
+      },
+      "sensor_spm_led_mode_thermostat": {
+        "name": "SPM LED próg termostatu"
+      },
+      "sensor_spm_led_mode_sensors": {
+        "name": "SPM LED próg sensorów"
+      },
+      "sensor_nr6_led_mode_standby": {
+        "name": "NR6 LED czuwanie"
+      },
+      "sensor_nr6_led_mode_thermostat": {
+        "name": "NR6 LED próg termostatu"
+      },
+      "sensor_nr6_led_mode_sensors": {
+        "name": "NR6 LED próg sensorów"
+      },
+      "sensor_nr7_led_mode_standby": {
+        "name": "NR7 LED czuwanie"
+      },
+      "sensor_nr7_led_mode_thermostat": {
+        "name": "NR7 LED próg termostatu"
+      },
+      "sensor_nr7_led_mode_sensors": {
+        "name": "NR7 LED próg sensorów"
+      },
+      "sensor_nr8_led_mode_standby": {
+        "name": "NR8 LED czuwanie"
+      },
+      "sensor_nr8_led_mode_thermostat": {
+        "name": "NR8 LED próg termostatu"
+      },
+      "sensor_nr8_led_mode_sensors": {
+        "name": "NR8 LED próg sensorów"
+      },
+      "sensor_nr9_led_mode_standby": {
+        "name": "NR9 LED czuwanie"
+      },
+      "sensor_nr9_led_mode_thermostat": {
+        "name": "NR9 LED próg termostatu"
+      },
+      "sensor_nr9_led_mode_sensors": {
+        "name": "NR9 LED próg sensorów"
+      },
+      "intake_temperature_as_outdoor": {
+        "name": "Temperatura czerpni jako temperatura zewnętrzna"
+      },
+      "ex4_enabled": {
+        "name": "Zezwolenie na obsługę modułu EX4"
+      },
+      "distributor_cooling_enabled": {
+        "name": "Rozdzielacz — funkcja chłodzenia"
+      },
+      "distributor_pwm_enabled": {
+        "name": "Rozdzielacz — funkcja PWM"
+      },
+      "ahu_supply_fan_stop": {
+        "name": "Wyłączenie nawiewu podczas pracy AHU"
+      },
+      "heat_pump_cooling": {
+        "name": "Realizacja chłodzenia przez PC"
+      },
+      "buffer_t7_control": {
+        "name": "Kontrola bufora czujnikiem T7"
+      },
+      "fireplace_active": {
+        "name": "Praca z kominkiem"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Tryb pracy",
+        "state": {
+          "manual": "Ręczny",
+          "schedule": "Harmonogram",
+          "holiday_schedule": "Harmonogram święto"
+        }
+      },
+      "manual_speed": {
+        "name": "Bieg ręczny",
+        "state": {
+          "B1": "B1",
+          "B2": "B2",
+          "B3": "B3",
+          "stopped": "Stop"
+        }
+      },
+      "away_program": {
+        "name": "Cykl wentylacji poza domem",
+        "state": {
+          "without_stops": "Bez przerw",
+          "work30_stop30": "30 min pracy / 30 min przerwy",
+          "work20_stop40": "20 min pracy / 40 min przerwy",
+          "work20_stop100": "20 min pracy / 100 min przerwy"
+        }
+      },
+      "thermostat_mode": {
+        "name": "Tryb termostatu",
+        "state": {
+          "schedule": "Harmonogram",
+          "holiday_schedule": "Harmonogram święto",
+          "manual": "Ręczny",
+          "away": "Poza domem"
+        }
+      },
+      "installation_season": {
+        "name": "Sezon",
+        "state": {
+          "winter": "Zima",
+          "summer": "Lato",
+          "cooling": "Chłodzenie"
+        }
+      },
+      "gwc_mode": {
+        "name": "Tryb GWC",
+        "state": {
+          "off": "Wyłączony",
+          "auto": "Automatyczny"
+        }
+      },
+      "bypass_mode": {
+        "name": "Tryb bypassu",
+        "state": {
+          "OFF": "Wyłączony",
+          "AUTO": "Automatyczny",
+          "ON": "Włączony"
+        }
+      },
+      "nano_language": {
+        "name": "Język panelu Nano",
+        "state": {
+          "polish": "Polski",
+          "english": "Angielski"
+        }
+      },
+      "nano_main_information": {
+        "name": "Informacja główna",
+        "state": {
+          "room": "Pomieszczenia",
+          "supply": "Nawiewu",
+          "extract": "Wywiewu"
+        }
+      },
+      "nano_season_change_method": {
+        "name": "Metoda zmiany sezonu Nano",
+        "state": {
+          "manual": "Ręcznie",
+          "outdoor_temperature": "Według temperatury zewnętrznej",
+          "averaged_temperature_1": "Według temperatury uśrednionej 1",
+          "averaged_temperature_2": "Według temperatury uśrednionej 2"
+        }
+      },
+      "nano_thermostat_function": {
+        "name": "Funkcja termostatu Nano",
+        "state": {
+          "none": "Brak",
+          "heating": "Ogrzewanie",
+          "cooling": "Chłodzenie",
+          "heating_cooling": "Ogrzewanie i chłodzenie"
+        }
+      },
+      "sensor_spm_led_mode": {
+        "name": "SPM sygnalizacja LED",
+        "state": {
+          "none": "Wyłączone",
+          "standby": "Czuwanie",
+          "thermostat": "Próg termostatu",
+          "standby_thermostat": "Czuwanie i próg termostatu",
+          "sensors": "Próg sensorów",
+          "standby_sensors": "Czuwanie i próg sensorów",
+          "thermostat_sensors": "Oba progi",
+          "all": "Wszystkie"
+        }
+      },
+      "sensor_nr6_led_mode": {
+        "name": "NR6 sygnalizacja LED",
+        "state": {
+          "none": "Wyłączone",
+          "standby": "Czuwanie",
+          "thermostat": "Próg termostatu",
+          "standby_thermostat": "Czuwanie i próg termostatu",
+          "sensors": "Próg sensorów",
+          "standby_sensors": "Czuwanie i próg sensorów",
+          "thermostat_sensors": "Oba progi",
+          "all": "Wszystkie"
+        }
+      },
+      "sensor_nr7_led_mode": {
+        "name": "NR7 sygnalizacja LED",
+        "state": {
+          "none": "Wyłączone",
+          "standby": "Czuwanie",
+          "thermostat": "Próg termostatu",
+          "standby_thermostat": "Czuwanie i próg termostatu",
+          "sensors": "Próg sensorów",
+          "standby_sensors": "Czuwanie i próg sensorów",
+          "thermostat_sensors": "Oba progi",
+          "all": "Wszystkie"
+        }
+      },
+      "sensor_nr8_led_mode": {
+        "name": "NR8 sygnalizacja LED",
+        "state": {
+          "none": "Wyłączone",
+          "standby": "Czuwanie",
+          "thermostat": "Próg termostatu",
+          "standby_thermostat": "Czuwanie i próg termostatu",
+          "sensors": "Próg sensorów",
+          "standby_sensors": "Czuwanie i próg sensorów",
+          "thermostat_sensors": "Oba progi",
+          "all": "Wszystkie"
+        }
+      },
+      "sensor_nr9_led_mode": {
+        "name": "NR9 sygnalizacja LED",
+        "state": {
+          "none": "Wyłączone",
+          "standby": "Czuwanie",
+          "thermostat": "Próg termostatu",
+          "standby_thermostat": "Czuwanie i próg termostatu",
+          "sensors": "Próg sensorów",
+          "standby_sensors": "Czuwanie i próg sensorów",
+          "thermostat_sensors": "Oba progi",
+          "all": "Wszystkie"
+        }
+      },
+      "supply_temperature_control_mode": {
+        "name": "Regulacja temperatury nawiewu",
+        "state": {
+          "room": "Według temperatury pomieszczenia",
+          "supply": "Według temperatury nawiewu",
+          "extract": "Według temperatury wywiewu"
+        }
+      },
+      "defrost_method": {
+        "name": "Metoda rozmrażania",
+        "state": {
+          "fan_off": "Wyłączenie wentylatora",
+          "heater": "Nagrzewnica",
+          "heater_fan": "Nagrzewnica i wentylator",
+          "bypass": "Bypass"
+        }
+      },
+      "relay_r3_function": {
+        "name": "Funkcja przekaźnika R3",
+        "state": {
+          "gwc": "GWC",
+          "central_heating": "C.O. ogrzewanie",
+          "damper": "Przepustnica",
+          "none": "Bez funkcji"
+        }
+      },
+      "di2_function": {
+        "name": "Funkcja wejścia DI2",
+        "state": {
+          "boost": "Wietrzenie",
+          "extract": "Wyciąg"
+        }
+      },
+      "bypass_configuration": {
+        "name": "Konfiguracja bypass",
+        "state": {
+          "inactive": "Nieaktywny",
+          "simplified": "Uproszczony",
+          "standard_room": "Standard Tpom",
+          "standard_extract": "Standard Twyw"
+        }
+      },
+      "operation_scheme": {
+        "name": "Schemat pracy",
+        "state": {
+          "standard": "Standard",
+          "ahu_kit": "AHU kit",
+          "pc": "PC",
+          "rotary": "Wym. obrotowy",
+          "rotary_pc": "Wym. obrotowy+PC"
+        }
+      },
+      "ex4_d1_function": {
+        "name": "EX4 D1 funkcja wejścia",
+        "state": {
+          "on_off": "Wejście ON/OFF",
+          "alarm": "Wejście alarm"
+        }
+      },
+      "ex4_d2_function": {
+        "name": "EX4 D2 funkcja wejścia",
+        "state": {
+          "on_off": "Wejście ON/OFF",
+          "alarm": "Wejście alarm"
+        }
+      },
+      "ex4_t1_function": {
+        "name": "EX4 T1 funkcja wejścia",
+        "state": {
+          "on_off": "Wejście ON/OFF",
+          "temperature": "Temperatura"
+        }
+      },
+      "ex4_t2_function": {
+        "name": "EX4 T2 funkcja wejścia",
+        "state": {
+          "on_off": "Wejście ON/OFF",
+          "temperature": "Temperatura"
+        }
+      },
+      "nano_background_color": {
+        "name": "Kolor tła Nano",
+        "state": {
+          "row_1_column_1": "Rząd 1, kolumna 1",
+          "row_1_column_2": "Rząd 1, kolumna 2",
+          "row_1_column_3": "Rząd 1, kolumna 3",
+          "row_1_column_4": "Rząd 1, kolumna 4",
+          "row_1_column_5": "Rząd 1, kolumna 5",
+          "row_1_column_6": "Rząd 1, kolumna 6",
+          "row_1_column_7": "Rząd 1, kolumna 7",
+          "row_2_column_1": "Rząd 2, kolumna 1",
+          "row_2_column_2": "Rząd 2, kolumna 2",
+          "row_2_column_3": "Rząd 2, kolumna 3",
+          "row_2_column_4": "Rząd 2, kolumna 4",
+          "row_2_column_5": "Rząd 2, kolumna 5",
+          "row_2_column_6": "Rząd 2, kolumna 6",
+          "row_2_column_7": "Rząd 2, kolumna 7",
+          "row_3_column_1": "Rząd 3, kolumna 1",
+          "row_3_column_2": "Rząd 3, kolumna 2",
+          "row_3_column_3": "Rząd 3, kolumna 3",
+          "row_3_column_4": "Rząd 3, kolumna 4",
+          "row_3_column_5": "Rząd 3, kolumna 5",
+          "row_3_column_6": "Rząd 3, kolumna 6",
+          "row_3_column_7": "Rząd 3, kolumna 7",
+          "row_4_column_1": "Rząd 4, kolumna 1",
+          "row_4_column_2": "Rząd 4, kolumna 2",
+          "row_4_column_3": "Rząd 4, kolumna 3",
+          "row_4_column_4": "Rząd 4, kolumna 4",
+          "row_4_column_5": "Rząd 4, kolumna 5",
+          "row_4_column_6": "Rząd 4, kolumna 6"
+        }
+      },
+      "nano_frame_color": {
+        "name": "Kolor ramki Nano",
+        "state": {
+          "row_1_column_1": "Rząd 1, kolumna 1",
+          "row_1_column_2": "Rząd 1, kolumna 2",
+          "row_1_column_3": "Rząd 1, kolumna 3",
+          "row_1_column_4": "Rząd 1, kolumna 4",
+          "row_1_column_5": "Rząd 1, kolumna 5",
+          "row_1_column_6": "Rząd 1, kolumna 6",
+          "row_1_column_7": "Rząd 1, kolumna 7",
+          "row_2_column_1": "Rząd 2, kolumna 1",
+          "row_2_column_2": "Rząd 2, kolumna 2",
+          "row_2_column_3": "Rząd 2, kolumna 3",
+          "row_2_column_4": "Rząd 2, kolumna 4",
+          "row_2_column_5": "Rząd 2, kolumna 5",
+          "row_2_column_6": "Rząd 2, kolumna 6",
+          "row_2_column_7": "Rząd 2, kolumna 7",
+          "row_3_column_1": "Rząd 3, kolumna 1",
+          "row_3_column_2": "Rząd 3, kolumna 2",
+          "row_3_column_3": "Rząd 3, kolumna 3",
+          "row_3_column_4": "Rząd 3, kolumna 4",
+          "row_3_column_5": "Rząd 3, kolumna 5",
+          "row_3_column_6": "Rząd 3, kolumna 6",
+          "row_3_column_7": "Rząd 3, kolumna 7",
+          "row_4_column_1": "Rząd 4, kolumna 1",
+          "row_4_column_2": "Rząd 4, kolumna 2",
+          "row_4_column_3": "Rząd 4, kolumna 3",
+          "row_4_column_4": "Rząd 4, kolumna 4",
+          "row_4_column_5": "Rząd 4, kolumna 5",
+          "row_4_column_6": "Rząd 4, kolumna 6"
+        }
+      },
+      "heater_priority": {
+        "name": "Priorytet nagrzewnic",
+        "state": {
+          "parallel": "Praca równoległa",
+          "ahu_priority": "Priorytet AHU"
+        }
+      },
+      "ahu_def_reaction": {
+        "name": "Reakcja na DEF z AHU",
+        "state": {
+          "supply_fan_stop": "Zatrzymanie nawiewu",
+          "supply_fan_half_speed": "Nawiew 50%"
+        }
+      },
+      "heater_type": {
+        "name": "Typ nagrzewnicy",
+        "state": {
+          "glycol": "Glikolowa",
+          "water": "Wodna"
+        }
+      },
+      "nano_button_style": {
+        "name": "Styl przycisków Nano",
+        "state": {
+          "3d_background": "3D w kolorze tła",
+          "3d_frame": "3D w kolorze ramki",
+          "icon_1": "Ikona 1 od lewej",
+          "icon_2": "Ikona 2 od lewej",
+          "icon_3": "Ikona 3 od lewej",
+          "icon_4": "Ikona 4 od lewej",
+          "icon_5": "Ikona 5 od lewej"
+        }
+      }
+    },
+    "number": {
+      "comfort_temperature": {
+        "name": "Temperatura Komfort"
+      },
+      "eco_winter_temperature": {
+        "name": "Temperatura ECO ogrzewanie"
+      },
+      "away_temperature": {
+        "name": "Temperatura poza domem"
+      },
+      "cooling_stop_temperature": {
+        "name": "Temperatura wyłączenia chłodzenia"
+      },
+      "winter_start_temperature": {
+        "name": "Temperatura włączenia zimy"
+      },
+      "winter_stop_temperature": {
+        "name": "Temperatura wyłączenia zimy"
+      },
+      "cooling_start_temperature": {
+        "name": "Temperatura włączenia chłodzenia"
+      },
+      "comfort_zone_gear": {
+        "name": "Bieg strefy Komfort"
+      },
+      "eco_zone_gear": {
+        "name": "Bieg strefy ECO"
+      },
+      "away_zone_gear": {
+        "name": "Bieg strefy poza domem / urlop"
+      },
+      "supply_speed_b1": {
+        "name": "Nawiew wydajność B1"
+      },
+      "supply_speed_b2": {
+        "name": "Nawiew wydajność B2"
+      },
+      "supply_speed_b3": {
+        "name": "Nawiew wydajność B3"
+      },
+      "supply_boost_percent": {
+        "name": "Nawiew wydajność wietrzenia"
+      },
+      "extract_speed_b1": {
+        "name": "Wywiew wydajność B1"
+      },
+      "extract_speed_b2": {
+        "name": "Wywiew wydajność B2"
+      },
+      "extract_speed_b3": {
+        "name": "Wywiew wydajność B3"
+      },
+      "extract_boost_percent": {
+        "name": "Wywiew wydajność wietrzenia"
+      },
+      "supply_temperature_min": {
+        "name": "Minimalna temperatura nawiewu"
+      },
+      "supply_temperature_max": {
+        "name": "Maksymalna temperatura nawiewu"
+      },
+      "boost_duration": {
+        "name": "Czas wietrzenia"
+      },
+      "fireplace_speed_correction": {
+        "name": "Korekta wydajności kominek"
+      },
+      "nano_dehumidification_start": {
+        "name": "Nano próg włączenia osuszania"
+      },
+      "nano_dehumidification_stop": {
+        "name": "Nano próg wyłączenia osuszania"
+      },
+      "nano_humidification_start": {
+        "name": "Nano próg włączenia nawilżania"
+      },
+      "nano_humidification_stop": {
+        "name": "Nano próg wyłączenia nawilżania"
+      },
+      "manual_temperature": {
+        "name": "Temperatura ręczna"
+      },
+      "eco_cooling_temperature": {
+        "name": "Temperatura ECO chłodzenie"
+      },
+      "gwc_winter_threshold": {
+        "name": "Próg GWC zima"
+      },
+      "gwc_summer_threshold": {
+        "name": "Próg GWC lato"
+      },
+      "filter_reminder_period": {
+        "name": "Okres przypomnienia o filtrze"
+      },
+      "fan_runon_time": {
+        "name": "Nastawa czasu wybiegu wentylatorów"
+      },
+      "defrost_temperature": {
+        "name": "Temperatura rozmrażania"
+      },
+      "defrost_regulation_band": {
+        "name": "Zakres regulacji rozmrażania"
+      },
+      "bypass_auto_outdoor_threshold": {
+        "name": "Temperatura zezwolenia na bypass AUTO"
+      },
+      "winter_supply_correction_gain": {
+        "name": "Wzmocnienie korekty nastawy nawiewu zima"
+      },
+      "summer_supply_correction_gain": {
+        "name": "Wzmocnienie korekty nastawy nawiewu lato/chłodzenie"
+      },
+      "nano_edit_brightness": {
+        "name": "Jasność podświetlenia edycja"
+      },
+      "nano_standby_brightness": {
+        "name": "Jasność podświetlenia czuwanie"
+      },
+      "sensor_spm_thermostat_start": {
+        "name": "SPM — Termostat — próg włączenia"
+      },
+      "sensor_spm_thermostat_stop": {
+        "name": "SPM — Termostat — próg wyłączenia"
+      },
+      "sensor_spm_dehumidification_start": {
+        "name": "SPM — Osuszanie — próg włączenia"
+      },
+      "sensor_spm_dehumidification_stop": {
+        "name": "SPM — Osuszanie — próg wyłączenia"
+      },
+      "sensor_spm_humidification_start": {
+        "name": "SPM — Nawilżanie — próg włączenia"
+      },
+      "sensor_spm_humidification_stop": {
+        "name": "SPM — Nawilżanie — próg wyłączenia"
+      },
+      "sensor_spm_led_brightness": {
+        "name": "SPM — Jasność LED"
+      },
+      "sensor_nr6_thermostat_start": {
+        "name": "NR6 — Termostat — próg włączenia"
+      },
+      "sensor_nr6_thermostat_stop": {
+        "name": "NR6 — Termostat — próg wyłączenia"
+      },
+      "sensor_nr6_dehumidification_start": {
+        "name": "NR6 — Osuszanie — próg włączenia"
+      },
+      "sensor_nr6_dehumidification_stop": {
+        "name": "NR6 — Osuszanie — próg wyłączenia"
+      },
+      "sensor_nr6_humidification_start": {
+        "name": "NR6 — Nawilżanie — próg włączenia"
+      },
+      "sensor_nr6_humidification_stop": {
+        "name": "NR6 — Nawilżanie — próg wyłączenia"
+      },
+      "sensor_nr6_led_brightness": {
+        "name": "NR6 — Jasność LED"
+      },
+      "sensor_nr7_thermostat_start": {
+        "name": "NR7 — Termostat — próg włączenia"
+      },
+      "sensor_nr7_thermostat_stop": {
+        "name": "NR7 — Termostat — próg wyłączenia"
+      },
+      "sensor_nr7_dehumidification_start": {
+        "name": "NR7 — Osuszanie — próg włączenia"
+      },
+      "sensor_nr7_dehumidification_stop": {
+        "name": "NR7 — Osuszanie — próg wyłączenia"
+      },
+      "sensor_nr7_humidification_start": {
+        "name": "NR7 — Nawilżanie — próg włączenia"
+      },
+      "sensor_nr7_humidification_stop": {
+        "name": "NR7 — Nawilżanie — próg wyłączenia"
+      },
+      "sensor_nr7_led_brightness": {
+        "name": "NR7 — Jasność LED"
+      },
+      "sensor_nr8_thermostat_start": {
+        "name": "NR8 — Termostat — próg włączenia"
+      },
+      "sensor_nr8_thermostat_stop": {
+        "name": "NR8 — Termostat — próg wyłączenia"
+      },
+      "sensor_nr8_dehumidification_start": {
+        "name": "NR8 — Osuszanie — próg włączenia"
+      },
+      "sensor_nr8_dehumidification_stop": {
+        "name": "NR8 — Osuszanie — próg wyłączenia"
+      },
+      "sensor_nr8_humidification_start": {
+        "name": "NR8 — Nawilżanie — próg włączenia"
+      },
+      "sensor_nr8_humidification_stop": {
+        "name": "NR8 — Nawilżanie — próg wyłączenia"
+      },
+      "sensor_nr8_led_brightness": {
+        "name": "NR8 — Jasność LED"
+      },
+      "sensor_nr9_thermostat_start": {
+        "name": "NR9 — Termostat — próg włączenia"
+      },
+      "sensor_nr9_thermostat_stop": {
+        "name": "NR9 — Termostat — próg wyłączenia"
+      },
+      "sensor_nr9_dehumidification_start": {
+        "name": "NR9 — Osuszanie — próg włączenia"
+      },
+      "sensor_nr9_dehumidification_stop": {
+        "name": "NR9 — Osuszanie — próg wyłączenia"
+      },
+      "sensor_nr9_humidification_start": {
+        "name": "NR9 — Nawilżanie — próg włączenia"
+      },
+      "sensor_nr9_humidification_stop": {
+        "name": "NR9 — Nawilżanie — próg wyłączenia"
+      },
+      "sensor_nr9_led_brightness": {
+        "name": "NR9 — Jasność LED"
+      },
+      "sensor_spm_pm1_threshold": {
+        "name": "SPM — Próg PM1"
+      },
+      "sensor_spm_pm25_threshold": {
+        "name": "SPM — Próg PM2.5"
+      },
+      "sensor_spm_pm4_threshold": {
+        "name": "SPM — Próg PM4"
+      },
+      "sensor_spm_pm10_threshold": {
+        "name": "SPM — Próg PM10"
+      },
+      "sensor_spm_pm_hysteresis": {
+        "name": "SPM — Histereza PM"
+      },
+      "nano_thermostat_correction": {
+        "name": "Korekta termostatu"
+      },
+      "nano_thermostat_hysteresis": {
+        "name": "Histereza termostatu"
+      },
+      "sensor_co2_start": {
+        "name": "Próg CO₂ włączenia wietrzenia"
+      },
+      "sensor_co2_stop": {
+        "name": "Próg CO₂ wyłączenia wietrzenia"
+      },
+      "sensor_voc_start": {
+        "name": "Próg VOC włączenia wietrzenia"
+      },
+      "sensor_voc_stop": {
+        "name": "Próg VOC wyłączenia wietrzenia"
+      },
+      "preheater_regulation_band": {
+        "name": "Zakres regulacji temperatury przed rekuperatorem"
+      },
+      "postheater_regulation_band": {
+        "name": "Zakres regulacji nagrzewnicy wtórnej"
+      },
+      "postheater_integral_gain": {
+        "name": "Współczynnik KI nagrzewnicy wtórnej"
+      },
+      "preheater_lockout_temperature": {
+        "name": "Temperatura blokady nagrzewnicy wstępnej"
+      },
+      "minimum_pre_exchanger_temperature": {
+        "name": "Minimalna temperatura przed rekuperatorem"
+      },
+      "exchanger_drying_duration": {
+        "name": "Czas osuszania rekuperatora"
+      },
+      "ao3_speed_1": {
+        "name": "AO3 bieg 1"
+      },
+      "ao3_speed_2": {
+        "name": "AO3 bieg 2"
+      },
+      "ao3_speed_3": {
+        "name": "AO3 bieg 3"
+      },
+      "ao3_airing": {
+        "name": "AO3 wietrzenie"
+      },
+      "ao3_regulation": {
+        "name": "Regulacja AO3"
+      },
+      "ahu_minimum_outdoor_temperature": {
+        "name": "Minimalna temperatura zezwolenia pracy AHU"
+      },
+      "ahu_regulation_band": {
+        "name": "Zakres regulacji nagrzewania/chłodzenia AHU"
+      },
+      "ahu_ki": {
+        "name": "KI nagrzewania/chłodzenia AHU"
+      },
+      "ahu_heating_start_power": {
+        "name": "Minimalna moc startu AHU grzanie"
+      },
+      "ahu_cooling_start_power": {
+        "name": "Minimalna moc startu AHU chłodzenie"
+      },
+      "ahu_maximum_power": {
+        "name": "Maksymalna moc AHU"
+      },
+      "ahu_minimum_idle_time": {
+        "name": "Minimalny czas postoju AHU"
+      },
+      "ahu_minimum_running_time": {
+        "name": "Minimalny czas pracy AHU"
+      },
+      "cooling_gear_offset": {
+        "name": "Korekta biegu w trybie chłodzenia"
+      },
+      "ahu_start_delta": {
+        "name": "Delta startu AHU"
+      },
+      "ahu_heating_stop_configuration": {
+        "name": "Konfiguracja zatrzymania grzania AHU"
+      },
+      "water_heater_minimum_temperature": {
+        "name": "Minimalna temperatura T6 nagrzewnicy wodnej"
+      }
+    },
+    "button": {
+      "filter_reset": {
+        "name": "Reset licznika filtra"
+      },
+      "clock_sync": {
+        "name": "Synchronizuj zegar z HA"
+      }
+    }
+  },
+  "services": {
+    "start_capture": {
+      "name": "Rozpocznij zapis RAW RX",
+      "description": "Zapis z obecnego odbiornika, maks. 15 minut i 10 MiB. Limit 5 plików; poprzednie pliki nie są automatycznie usuwane.",
+      "fields": {
+        "entry_id": {
+          "name": "ID wpisu integracji",
+          "description": "Opcjonalne przy jednym urządzeniu."
+        },
+        "duration": {
+          "name": "Czas zapisu"
+        }
+      }
+    },
+    "stop_capture": {
+      "name": "Zakończ zapis RAW RX",
+      "description": "Kończy zapis pliku, odbiornik nadal pracuje.",
+      "fields": {
+        "entry_id": {
+          "name": "ID wpisu integracji"
+        }
+      }
+    },
+    "get_schedule": {
+      "name": "Odczytaj harmonogram Nano",
+      "description": "Zwraca osiem dni, w tym Święto, na podstawie odebranych parametrów.",
+      "fields": {
+        "entry_id": {
+          "name": "Identyfikator integracji"
+        },
+        "refresh_day": {
+          "name": "Odśwież dzień z urządzenia",
+          "description": "Opcjonalny priorytetowy odczyt bez zmiany nastaw; wymaga rozszerzonego trybu lokalnego."
+        }
+      }
+    },
+    "set_schedule_period": {
+      "name": "Ustaw przedział harmonogramu Nano",
+      "description": "Zapisuje jeden przedział z osobnym potwierdzeniem granic. Zapis nie jest atomowy; błąd może pozostawić częściową zmianę. Wymaga rozszerzonego trybu lokalnego.",
+      "fields": {
+        "entry_id": {
+          "name": "Identyfikator integracji"
+        },
+        "day": {
+          "name": "Dzień"
+        },
+        "period": {
+          "name": "Przedział (1–3)"
+        },
+        "start": {
+          "name": "Początek (GG:MM)"
+        },
+        "end": {
+          "name": "Koniec (GG:MM)"
+        }
+      }
+    },
+    "refresh_parameters": {
+      "name": "Odśwież parametry",
+      "description": "Priorytetowy odczyt rozpoznanych kluczy bez zapisu nastaw. Wspólne pakiety są odczytywane raz.",
+      "fields": {
+        "entry_id": {
+          "name": "Identyfikator integracji"
+        },
+        "keys": {
+          "name": "Klucze parametrów"
+        }
+      }
+    },
+    "user_control": {
+      "name": "Sterowanie użytkowe",
+      "description": "Wybierz tryb, bieg lub wietrzenie. Kolejne zapisy wymagają potwierdzenia; błąd przerywa sekwencję.",
+      "fields": {
+        "entity_id": {
+          "name": "Encja urządzenia"
+        },
+        "action": {
+          "name": "Sterowanie"
+        },
+        "value": {
+          "name": "Wartość"
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "capture_choose_entry": {
+      "message": "Wybierz jeden działający wpis integracji."
+    },
+    "capture_unavailable": {
+      "message": "Odbiornik nie działa albo zapis jest już uruchomiony."
+    },
+    "capture_io_error": {
+      "message": "Nie udało się otworzyć lub zakończyć pliku zapisu. Sprawdź diagnostykę."
+    },
+    "capture_quota_reached": {
+      "message": "Osiągnięto limit plików RAW. Wyeksportuj i usuń wcześniejsze przechwyty."
+    },
+    "command_busy": {
+      "message": "Poprzednie polecenie jeszcze trwa."
+    },
+    "control_unavailable": {
+      "message": "Sterowanie wymaga aktywnego trybu lokalnego i aktualnych danych centrali."
+    },
+    "command_not_confirmed": {
+      "message": "Centrala nie potwierdziła zmiany. Sprawdź jej aktualny stan przed kolejną próbą."
+    },
+    "manual_mode_required": {
+      "message": "Wybierz najpierw tryb ręczny."
+    },
+    "manual_gear_unknown": {
+      "message": "Nie rozpoznano biegu do przejścia w tryb ręczny. Wybierz bieg ręczny na Nano."
+    },
+    "invalid_schedule": {
+      "message": "Użyj przedziału w obrębie dnia z krokiem 15 minut; koniec może wynosić 24:00. 00:00/00:00 wyłącza przedział."
+    },
+    "schedule_not_confirmed": {
+      "message": "Nie potwierdzono całej zmiany harmonogramu. Część granic mogła się zmienić; odczytaj bieżący harmonogram przed ponowieniem."
+    },
+    "invalid_parameter_value": {
+      "message": "Użyj dozwolonej opcji albo wartości zgodnej z zakresem i krokiem nastawy."
+    }
+  }
+}

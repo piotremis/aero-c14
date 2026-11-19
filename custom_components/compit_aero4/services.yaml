@@ -1,0 +1,98 @@
+start_capture:
+  fields:
+    entry_id:
+      selector:
+        text:
+    duration:
+      default: 120
+      selector:
+        number:
+          min: 1
+          max: 900
+          unit_of_measurement: s
+          mode: box
+stop_capture:
+  fields:
+    entry_id:
+      selector:
+        text:
+get_schedule:
+  fields:
+    entry_id:
+      selector:
+        text:
+    refresh_day:
+      selector:
+        select:
+          options:
+            - monday
+            - tuesday
+            - wednesday
+            - thursday
+            - friday
+            - saturday
+            - sunday
+            - holiday
+refresh_parameters:
+  fields:
+    entry_id:
+      selector:
+        text:
+    keys:
+      required: true
+      example: "[comfort_temperature, supply_speed_b2]"
+      selector:
+        object:
+set_schedule_period:
+  fields:
+    entry_id:
+      selector:
+        text:
+    day:
+      required: true
+      selector:
+        select:
+          options:
+            - monday
+            - tuesday
+            - wednesday
+            - thursday
+            - friday
+            - saturday
+            - sunday
+            - holiday
+    period:
+      required: true
+      selector:
+        number:
+          min: 1
+          max: 3
+          step: 1
+          mode: box
+    start:
+      required: true
+      example: "08:00"
+      selector:
+        text:
+    end:
+      required: true
+      example: "12:30"
+      selector:
+        text:
+
+user_control:
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          integration: compit_aero4
+    action:
+      required: true
+      selector:
+        select:
+          options: [mode, gear, boost]
+    value:
+      required: true
+      selector:
+        text:
