@@ -42,6 +42,8 @@ class Aero4ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         extra_default = {'default': defaults['extended_parameters']} if 'extended_parameters' in defaults else {}
         fields[vol.Optional('extended_parameters', **extra_default)] = bool
         fields[vol.Optional('clock_sync', default=defaults.get('clock_sync', False))] = bool
+        if entry is not None:
+            fields[vol.Optional('disable_gateway_detection', default=defaults.get('disable_gateway_detection', False))] = bool
         return vol.Schema(fields)
 
     async def _transport_step(self, kind, user_input):

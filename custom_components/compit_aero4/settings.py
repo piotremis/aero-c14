@@ -12,6 +12,8 @@ def transport_config(data):
         raise ValueError('Local polling must be boolean')
     if type(data.get('extended_parameters',False)) is not bool:
         raise ValueError('Extended parameters must be boolean')
+    if type(data.get('disable_gateway_detection', False)) is not bool:
+        raise ValueError('Disable gateway detection must be boolean')
     positive_seconds(data[CONF_STALE_AFTER], CONF_STALE_AFTER)
     if data[CONF_STALE_AFTER] > 86400 or data[CONF_STALE_AFTER] < 1:
         raise ValueError('Freshness must be between 1 and 86400 seconds')

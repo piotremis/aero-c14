@@ -28,7 +28,11 @@
           "stopbits": "Stop bits",
           "local_polling": "Local polling without iNext",
           "extended_parameters": "Extended settings",
-          "clock_sync": "Synchronize Nano clock with Home Assistant"
+          "clock_sync": "Synchronize Nano clock with Home Assistant",
+          "disable_gateway_detection": "Disable detection of other gateways on the bus"
+        },
+        "data_description": {
+          "disable_gateway_detection": "Detection is enabled by default. Select only to work around false detections. When disabled, you are responsible for keeping iNext and other C14 gateways disconnected from this bus while Home Assistant polls locally."
         }
       },
       "tcp": {
@@ -42,7 +46,11 @@
           "connect_timeout": "Connection timeout (seconds)",
           "local_polling": "Local polling without iNext",
           "extended_parameters": "Extended settings",
-          "clock_sync": "Synchronize Nano clock with Home Assistant"
+          "clock_sync": "Synchronize Nano clock with Home Assistant",
+          "disable_gateway_detection": "Disable detection of other gateways on the bus"
+        },
+        "data_description": {
+          "disable_gateway_detection": "Detection is enabled by default. Select only to work around false detections. When disabled, you are responsible for keeping iNext and other C14 gateways disconnected from this bus while Home Assistant polls locally."
         }
       }
     },

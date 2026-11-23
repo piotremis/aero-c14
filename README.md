@@ -20,7 +20,7 @@
 
 Lokalna integracja rekuperatora **AERO 4** z panelem **Nano Color 2**. Umożliwia odczyt parametrów, sterowanie wentylacją i zarządzanie harmonogramem bez korzystania z chmury iNext.
 
-**Wersja: 1.0.0** · **Języki: polski i angielski** · **Licencja: MIT**
+**Wersja: 1.0.1** · **Języki: polski i angielski** · **Licencja: MIT**
 
 ## Podgląd kart
 
@@ -118,6 +118,14 @@ Wybierz **Ustawienia → Urządzenia i usługi → Dodaj integrację → AERO C1
 Domyślnie integracja pracuje jako odbiornik danych. Aby korzystać ze sterowania i edytora harmonogramu, włącz **Lokalne odpytywanie** i **Rozszerzone nastawy**.
 
 Przed włączeniem lokalnego odpytywania odłącz iNext lub inną bramkę sterującą tą samą magistralą. Nano pozostaje masterem. Z jednego portu adaptera może korzystać tylko jeden odbiornik.
+
+### Wykrywanie innych bramek
+
+Wykrywanie innych bramek C14 jest domyślnie włączone, również po aktualizacji istniejącej instalacji. Wykrycie innej bramki blokuje lokalne odpytywanie i sterowanie przez HA.
+
+Jeśli występują fałszywe wykrycia, otwórz **Ustawienia → Urządzenia i usługi → AERO C14 → Rekonfiguruj**, wybierz połączenie Serial lub TCP i zaznacz **Wyłącz wykrywanie innych bramek na magistrali**. Zapisanie konfiguracji przeładuje integrację. Odznaczenie tej opcji ponownie włącza wykrywanie.
+
+Po wyłączeniu wykrywania użytkownik odpowiada za to, aby podczas lokalnego odpytywania przez HA do tej samej magistrali nie podłączać iNext ani innej bramki C14. Timeouty, kontrola poprawności ramek i obsługa przerwanych transmisji nadal działają. Aktualny stan wykrywania jest widoczny w diagnostyce jako `polling.gateway_detection`.
 
 ## Karty panelu
 

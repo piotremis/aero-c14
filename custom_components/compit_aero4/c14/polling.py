@@ -39,11 +39,14 @@ class LocalPolling:
     MAX_READS_PER_WINDOW = 18  
     MAX_PARAMETER_READS_PER_WINDOW = 17
 
-    def __init__(self, enabled=False, *, extended_parameters=False, solicit_status=False, direct_boost=False, direct_ventilation=False, direct_user_controls=False):
+    def __init__(self, enabled=False, *, gateway_detection=True, extended_parameters=False, solicit_status=False, direct_boost=False, direct_ventilation=False, direct_user_controls=False):
         if type(enabled) is not bool:
             raise ValueError('Local polling must be boolean')
         if type(extended_parameters) is not bool:
             raise ValueError('Extended parameters must be boolean')
+        if type(gateway_detection) is not bool:
+            raise ValueError('Gateway detection must be boolean')
+        self.gateway_detection = gateway_detection
         self.extended_parameters = extended_parameters
         if type(solicit_status) is not bool:
             raise ValueError('Status solicitation must be boolean')
@@ -255,6 +258,7 @@ class LocalPolling:
                   'learning' if self.phase=='baseline' and self.polls<3 and not self._access_confirmed else
                   'ready' if self.phase=='baseline' else 'polling')
         return {'enabled':self.enabled,'status':status,'phase':self.phase,
+                'gateway_detection':self.gateway_detection,
                 'extended_parameters':self.extended_parameters,'batch_count':len(self.read_batches),
                 'unique_batch_count':len(self.unique_batch_indices),
                 'card_batch_count':len(self.card_batches),
@@ -311,6 +315,8 @@ class LocalPolling:
         self._window_telemetry_completed = False
 
     def _conflict(self):
+        if not self.gateway_detection:
+            return
         self.blocked = True  
         self._failure('other_gateway_detected')
 
@@ -561,7 +567,7 @@ class LocalPolling:
             if owned_reply:
 
 
-                if any(decode(frame)['valid'] and
+                if self.gateway_detection and any(decode(frame)['valid'] and
                        is_gateway_frame(frame)
                        for frame in frames):
                     self._conflict()
@@ -585,8 +591,10 @@ class LocalPolling:
                 self._config_templates[frame.raw[4]] = (frame.raw, now)
             foreign = is_gateway_frame(frame)
             if foreign:
-                self._conflict()
-                return None
+                if self.gateway_detection:
+                    self._conflict()
+                    return None
+                continue
             if self.command is not None:
                 self.command.observe(decode(frame)['values'], now)
             if key == AIR_QUALITY_FRAME_KEY:
@@ -596,7 +604,7 @@ class LocalPolling:
             if self.phase == 'draining':
                 if key in RELEASE_RESUME_KEYS:
                     self._failure(self._closing_error)
-                elif key in ('F0/72/29','F0/74/29','F0/77/29') and not self._is_late_owned_reply(frame):
+                elif self.gateway_detection and key in ('F0/72/29','F0/74/29','F0/77/29') and not self._is_late_owned_reply(frame):
                     self._conflict()
                 
                 
@@ -611,7 +619,7 @@ class LocalPolling:
                     and not partial and index == len(frames)-1 else None)
                 if key == 'E4/21/63':
                     self._aero_generation += 1
-                if key in ('F0/65/29','F0/72/29','F0/74/29','F0/77/29'):
+                if self.gateway_detection and key in ('F0/65/29','F0/72/29','F0/74/29','F0/77/29'):
                     self._conflict()
                     return None
                 if frame.raw == GATEWAY_POLL:
@@ -833,7 +841,7 @@ class LocalPolling:
                     
                     continue
                 else:
-                    if key in ('F0/65/29','F0/72/29','F0/74/29','F0/77/29'):
+                    if self.gateway_detection and key in ('F0/65/29','F0/72/29','F0/74/29','F0/77/29'):
                         self._conflict()
                     else:
                         self._failure('window_interrupted')

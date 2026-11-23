@@ -26,7 +26,7 @@ class Receiver:
     def __init__(self, config: SerialConfig | TcpConfig, *, stale_after: float,
                  on_update: Callable[[dict], None] | None = None,
                  retry_initial: float = 1, retry_max: float = 30,
-                 factory=None, clock=time.monotonic_ns, local_polling=False, extended_parameters=False,
+                 factory=None, clock=time.monotonic_ns, local_polling=False, extended_parameters=False, gateway_detection=True,
                  solicit_status=False, direct_boost=False, direct_ventilation=False, direct_user_controls=False):
         positive_seconds(stale_after, 'stale_after')
         positive_seconds(retry_initial, 'retry_initial')
@@ -43,7 +43,7 @@ class Receiver:
         self._clock = clock
         self._retry_initial, self._retry_max = retry_initial, retry_max
         self._running = False
-        self.polling = LocalPolling(local_polling, extended_parameters=extended_parameters, solicit_status=solicit_status, direct_boost=direct_boost, direct_ventilation=direct_ventilation, direct_user_controls=direct_user_controls)
+        self.polling = LocalPolling(local_polling, gateway_detection=gateway_detection, extended_parameters=extended_parameters, solicit_status=solicit_status, direct_boost=direct_boost, direct_ventilation=direct_ventilation, direct_user_controls=direct_user_controls)
         self._pending_tx = None
         self._command_changed = asyncio.Event()
         self._sequence_task = None

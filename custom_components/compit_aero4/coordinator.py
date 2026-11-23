@@ -26,6 +26,7 @@ class Aero4Coordinator(DataUpdateCoordinator):
         self.entry = entry
         self.receiver = Receiver(transport_config(entry.data), stale_after=entry.data[CONF_STALE_AFTER],
                                  on_update=self._receive,local_polling=entry.data.get('local_polling',False),
+                                 gateway_detection=not entry.data.get('disable_gateway_detection', False),
                                  extended_parameters=entry.data.get('extended_parameters',False),solicit_status=True,direct_boost=True,direct_ventilation=True,direct_user_controls=True)
         self.boost_timer = BoostTimer(self.receiver, Store(hass, 1, f'{DOMAIN}.boost_{entry.entry_id}'))
         self.receiver.boost_timer = self.boost_timer

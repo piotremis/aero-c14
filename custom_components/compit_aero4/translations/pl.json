@@ -28,7 +28,11 @@
           "stopbits": "Bity stopu",
           "local_polling": "Lokalne odpytywanie bez iNext",
           "extended_parameters": "Rozszerzone nastawy",
-          "clock_sync": "Synchronizuj zegar Nano z Home Assistant"
+          "clock_sync": "Synchronizuj zegar Nano z Home Assistant",
+          "disable_gateway_detection": "Wyłącz wykrywanie innych bramek na magistrali"
+        },
+        "data_description": {
+          "disable_gateway_detection": "Domyślnie wykrywanie jest włączone. Zaznacz tylko przy fałszywych wykryciach. Po wyłączeniu odpowiadasz za to, aby podczas lokalnego odpytywania przez HA nie podłączać iNext ani innej bramki C14 do tej samej magistrali."
         }
       },
       "tcp": {
@@ -42,7 +46,11 @@
           "connect_timeout": "Timeout połączenia (sekundy)",
           "local_polling": "Lokalne odpytywanie bez iNext",
           "extended_parameters": "Rozszerzone nastawy",
-          "clock_sync": "Synchronizuj zegar Nano z Home Assistant"
+          "clock_sync": "Synchronizuj zegar Nano z Home Assistant",
+          "disable_gateway_detection": "Wyłącz wykrywanie innych bramek na magistrali"
+        },
+        "data_description": {
+          "disable_gateway_detection": "Domyślnie wykrywanie jest włączone. Zaznacz tylko przy fałszywych wykryciach. Po wyłączeniu odpowiadasz za to, aby podczas lokalnego odpytywania przez HA nie podłączać iNext ani innej bramki C14 do tej samej magistrali."
         }
       }
     },
