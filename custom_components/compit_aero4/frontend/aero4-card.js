@@ -41,6 +41,20 @@ const EN={'Od\u015bwie\u017canie':'Refreshing','Ostatni odczyt':'Last reading',
   'Filtr':'Filter','Reset licznika filtra':'Reset filter reminder counter',
   '% normy':'% of norm','Próg Nano':'Nano threshold','Brak progu odniesienia':'No reference threshold',
 };
+const DISPLAY = [
+  ['header','Nagłówek','Header','header'],['connection','Stan połączenia','Connection status','#connection'],
+  ['diagram','Schemat i temperatury','Diagram and temperatures','.machine'],['fans','Wentylatory','Fans','.fan'],
+  ['filter','Filtr','Filter','#filter-status'],['air_co2','CO₂','CO₂','#air_co2-row'],
+  ['air_pm25_percent','PM2,5','PM2.5','#air_pm25_percent-row'],['air_pm10_percent','PM10','PM10','#air_pm10_percent-row'],
+  ['power','Wentylacja','Ventilation','.powerline'],['mode','Tryb pracy','Operating mode','#mode-select'],
+  ['gear','Wybór biegu','Speed selection','#gear-control'],['fireplace','Kominek','Fireplace','#fireplace-control'],
+  ['bypass','Bypass','Bypass','#bypass-control'],['gwc','GWC','Ground exchanger','#gwc-control'],
+  ['boost','Wietrzenie','Boost','.boostbox'],['footer','Stopka','Footer','footer'],
+];
+function validateVisibility(value){
+  if(value===undefined)return;
+  if(!value||typeof value!=='object'||Array.isArray(value)||Object.values(value).some(v=>typeof v!=='boolean'))throw Error('visibility musi być mapą wartości true/false');
+}
 const css = `
 :host{display:block;font-family:var(--paper-font-body1_-_font-family,system-ui,sans-serif);--ink:var(--primary-text-color,#e9f1f8);--muted:var(--secondary-text-color,#9aaec0);--line:var(--divider-color,#ffffff14);--accent:#39bdd3;--surface:color-mix(in srgb,var(--ink) 4%,var(--ha-card-background,var(--card-background-color,#111e2a)))}*{box-sizing:border-box}[hidden]{display:none!important}
 ha-card{display:block;overflow:hidden;background:var(--ha-card-background,var(--card-background-color,#111e2a));border:1px solid var(--line);border-radius:20px;color:var(--ink);box-shadow:0 8px 28px #0000000c}
@@ -89,6 +103,25 @@ const controlsCss=`
 `;
 const bypassPath='M67 115H165Q183 115 183 133V256Q183 274 201 274H399Q417 274 417 256V247Q417 229 435 229H533';
 const bypassCss=`.bypass{stroke-width:17;stroke-dasharray:none;stroke-linecap:round;stroke-linejoin:round;transition:opacity .25s}.bypass.open{opacity:1;filter:drop-shadow(0 0 5px #24d1e64d)}.machine.bypass-open #fresh-duct{opacity:.12}.machine.bypass-open #supply-arrow{fill:#35d5e9}.bypass-label{opacity:0}.bypass-label.open{opacity:1}.bypass-label rect{fill:#103c52;stroke:#35d5e980}.bypass-label text{fill:#6de9ed;font-size:11px;font-weight:650;letter-spacing:.07em}`;
+// Inherit HA theme variables directly so theme changes also work without a hass update.
+const themeCss=`
+:host{--ink:var(--primary-text-color,#212121);--muted:var(--secondary-text-color,#727272);--line:var(--divider-color,#e0e0e0);--accent:var(--primary-color,#03a9f4);--card:var(--ha-card-background,var(--card-background-color,#fff));--surface:color-mix(in srgb,var(--ink) 5%,var(--card));--ui-accent:var(--accent)}
+ha-card{background:var(--card);border:var(--ha-card-border-width,1px) solid var(--ha-card-border-color,var(--line));border-radius:var(--ha-card-border-radius,12px);box-shadow:var(--ha-card-box-shadow,none)}
+.machine{background:radial-gradient(ellipse at 50% 48%,color-mix(in srgb,var(--accent) 12%,var(--card)),var(--card));color:var(--ink);border-color:var(--line)}
+.machine:before{display:none}.tag,.core-label,.note,.status-core{fill:var(--muted)}.temp,.gear{fill:var(--ink)}.temp.missing{fill:var(--muted)}
+.core-body{fill:var(--surface);stroke:var(--line)}.core-fin{stroke:var(--muted)}.diagram rect[x="250"]{fill:var(--card);stroke:var(--line)}
+.bypass-label rect{fill:var(--card);stroke:var(--accent)}.bypass-label text{fill:var(--ink)}
+.controls,.picker,button,.boost-row{background:var(--card)}.controls svg,.controls .boostbox svg{color:var(--muted)}
+.controls button:hover{background:var(--surface)}.controls .segments{border-color:var(--line)}
+.controls .switch{background:var(--disabled-color,#bdbdbd)}.controls .switch i{background:var(--card)}
+.controls .switch[aria-checked=true]{background:var(--accent)}.controls .switch[aria-checked=true] i{background:var(--text-primary-color,#fff)}
+.controls .segments button[aria-pressed=true]{background:color-mix(in srgb,var(--accent) 14%,var(--card));color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
+.controls .boost-toggle[aria-pressed=true]{background:color-mix(in srgb,var(--accent) 14%,var(--card))}
+.connection{color:var(--success-color,#208349);background:color-mix(in srgb,var(--success-color,#208349) 10%,var(--card));border-color:var(--line)}
+.connection.offline{color:var(--muted);background:var(--surface)}
+.filter-status[data-level=warning]{--filter-color:var(--warning-color,#9c6a00)}.filter-status[data-level=danger],.filter-status[data-level=critical]{--filter-color:var(--error-color,#db4437)}
+.fans:has(>.fan[hidden]){grid-template-columns:1fr}
+`;
 
 export class Aero4Card extends HTMLElement {
   constructor(){super();this.attachShadow({mode:'open'});this._demo={...DEMO};this._choices={};this._timers={};this._busy=false;this._pending={};this._confirmed={};this._onKeyboard=()=>this._keyboardInput=true;this._onPointer=()=>this._keyboardInput=false;}
@@ -99,15 +132,30 @@ export class Aero4Card extends HTMLElement {
   setConfig(config){
     if(!config || (config.demo!==undefined && typeof config.demo!=='boolean')) throw Error('demo musi być true/false');
     if(config.entities!==undefined && (!config.entities || typeof config.entities!=='object' || Array.isArray(config.entities))) throw Error('entities musi być mapą');
+    validateVisibility(config.visibility);
     this._cancelChoices();
-    this._confirmed={};this._config={...config,entities:{...config.entities}};
+    this._confirmed={};this._config={...config,entities:{...config.entities},visibility:{...config.visibility}};
     if(config.demo) this._demo={...DEMO};
     this._build();this._update();
   }
   set hass(value){this._hass=value;this._resolveEntities();this._update();}
-  getCardSize(){return 7;}
-  getGridOptions(){return {columns:12,rows:8,min_columns:6,min_rows:6};}
+  getCardSize(){return Math.max(1,Math.ceil((this.shadowRoot.querySelector('ha-card')?.offsetHeight||350)/50));}
+  getGridOptions(){return {columns:12,rows:'auto',min_columns:6,min_rows:1};}
   static getStubConfig(){return {type:'custom:aero4-card'};}
+  static getConfigElement(){return document.createElement('aero4-card-editor');}
+  _applyVisibility(){
+    const visible=key=>this._config.visibility?.[key]!==false;
+    for(const [key,,,selector] of DISPLAY){
+      for(let el of this.shadowRoot.querySelectorAll(selector)){
+        if(['mode','gear','fireplace','bypass','gwc'].includes(key))el=el.closest('.line');
+        const unavailable=key.startsWith('air_')&&(this._number(key)===null||this._number(key)<0||!this._ready(key));
+        el.hidden=!visible(key)||unavailable;
+      }
+    }
+    this.shadowRoot.querySelector('.fans').hidden=![...this.shadowRoot.querySelector('.fans').children].some(el=>!el.hidden);
+    this.shadowRoot.querySelector('.controls').hidden=!['power','mode','gear','fireplace','bypass','gwc','boost'].some(visible);
+    this.shadowRoot.querySelector('.section-title').hidden=!['fireplace','bypass','gwc'].some(visible);
+  }
   get _language(){return String(this._hass?.locale?.language??this._hass?.language??'en').toLowerCase().startsWith('pl')?'pl':'en';}
   _translate(value){
     if(this._language==='pl')return String(value);
@@ -165,7 +213,7 @@ export class Aero4Card extends HTMLElement {
   }
   _build(){
     this._builtLanguage=this._language;
-    const markup=`<style>${css}${bypassCss}${controlsCss}</style><ha-card>
+    const markup=`<style>${css}${bypassCss}${controlsCss}${themeCss}</style><ha-card>
       <header><div><div class="brand">C14 · REKUPERACJA</div><h2 id="title"></h2></div><div id="connection" class="connection"><i></i><span id="connection-label"></span></div></header>
       <div class="machine"><svg class="diagram" viewBox="0 0 600 340" role="img" aria-labelledby="drawing-title drawing-desc">
       <title id="drawing-title">Wymiennik AERO 4</title><desc id="drawing-desc">Czerpnia u góry po lewej, nawiew na dole po prawej. Wywiew u góry po prawej, wyrzutnia na dole po lewej. Dwa oddzielne kanały wymiany ciepła.</desc>
@@ -404,8 +452,27 @@ export class Aero4Card extends HTMLElement {
     this._text('action-status','');
     const progress=this._number('parameter_scan_progress');
     this._text('footer-status',this._config.demo?'Symulacja · bez połączenia z centralą':online&&progress!==null&&progress<100?`Odczyt nastaw · ${progress}%`:online?'Dane AERO 4 · szczegóły po kliknięciu':'Oczekiwanie na aktualne dane');
+    this._applyVisibility();
   }
 }
+export class Aero4CardEditor extends HTMLElement {
+  constructor(){super();this.attachShadow({mode:'open'});}
+  setConfig(config){validateVisibility(config.visibility);this._config={...config,visibility:{...config.visibility}};this._render();}
+  set hass(value){const before=this._pl;this._hass=value;if(before!==this._pl)this._render();}
+  get _pl(){return String(this._hass?.locale?.language??this._hass?.language??'en').toLowerCase().startsWith('pl');}
+  _emit(){this.dispatchEvent(new CustomEvent('config-changed',{detail:{config:{...this._config,visibility:{...this._config.visibility}}},bubbles:true,composed:true}));}
+  _render(){
+    if(!this._config)return;
+    this.shadowRoot.innerHTML=`<style>:host{display:block;color:var(--primary-text-color);font:inherit}label{display:flex;gap:12px;align-items:center;padding:10px 0;cursor:pointer}input[type=checkbox]{width:20px;height:20px;accent-color:var(--primary-color)}.title{display:grid}input[type=text]{font:inherit;padding:10px;color:inherit;background:var(--card-background-color);border:1px solid var(--divider-color);border-radius:6px}fieldset{border:0;padding:0;margin:16px 0}legend{font-weight:600}p{color:var(--secondary-text-color);font-size:13px}</style><label class="title">${this._pl?'Tytuł':'Title'}<input id="title" type="text"></label><fieldset><legend>${this._pl?'Elementy widoczne na karcie':'Elements shown on the card'}</legend>${DISPLAY.map(([key,pl,en])=>`<label><input type="checkbox" data-key="${key}">${this._pl?pl:en}</label>`).join('')}</fieldset><p>${this._pl?'Czujniki jakości powietrza pojawiają się tylko wtedy, gdy mają dostępne dane. Wygląd jest automatycznie dopasowany do motywu Home Assistant.':'Air quality sensors appear only when data is available. Appearance automatically follows the Home Assistant theme.'}</p>`;
+    const title=this.shadowRoot.getElementById('title');title.value=this._config.title??'';
+    title.oninput=()=>{this._config={...this._config,title:title.value};this._emit();};
+    for(const input of this.shadowRoot.querySelectorAll('[data-key]')){
+      input.checked=this._config.visibility[input.dataset.key]!==false;
+      input.onchange=()=>{this._config={...this._config,visibility:{...this._config.visibility,[input.dataset.key]:input.checked}};this._emit();};
+    }
+  }
+}
+if(!customElements.get('aero4-card-editor'))customElements.define('aero4-card-editor',Aero4CardEditor);
 if(!customElements.get('aero4-card')) customElements.define('aero4-card',Aero4Card);
 window.customCards=window.customCards||[];
 if(!window.customCards.some(c=>c.type==='aero4-card')) window.customCards.push({type:'aero4-card',name:'AERO C14',description:'Schemat wymiennika i lokalne dane rekuperatora',preview:true});

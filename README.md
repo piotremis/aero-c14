@@ -20,16 +20,16 @@
 
 Lokalna integracja rekuperatora **AERO 4** z panelem **Nano Color 2**. Umożliwia odczyt parametrów, sterowanie wentylacją i zarządzanie harmonogramem bez korzystania z chmury iNext.
 
-**Wersja: 1.0.1** · **Języki: polski i angielski** · **Licencja: MIT**
+**Wersja: 1.0.2** · **Języki: polski i angielski** · **Licencja: MIT**
 
 ## Podgląd kart
 
-Dwie karty panelu są dołączone do integracji: sterowanie rekuperatorem oraz edytor harmonogramu Nano. Poniższe widoki przedstawiają przykładowe dane; czujniki jakości powietrza są opcjonalne.
+Dwie karty panelu są dołączone do integracji: sterowanie rekuperatorem oraz edytor harmonogramu Nano. Obie automatycznie dopasowują się do jasnego, ciemnego i własnego motywu Home Assistant, korzystając z jego tła, tekstu, akcentu, obramowania, zaokrąglenia i cienia.
 
 <table>
   <tr>
-    <th>Rekuperator</th>
-    <th>Harmonogram Nano</th>
+    <th>Rekuperator · motyw ciemny</th>
+    <th>Harmonogram Nano · motyw ciemny</th>
   </tr>
   <tr>
     <td align="center" valign="top" width="50%">
@@ -39,9 +39,27 @@ Dwie karty panelu są dołączone do integracji: sterowanie rekuperatorem oraz e
       <a href="images/aero-c14-schedule-card.png"><img src="images/aero-c14-schedule-card.png" alt="Edytor harmonogramu Nano z wyborem dnia, podglądem programu i trzema przedziałami czasowymi" width="420"></a>
     </td>
   </tr>
+  <tr>
+    <th>Rekuperator · motyw jasny</th>
+    <th>Harmonogram Nano · motyw jasny</th>
+  </tr>
+  <tr>
+    <td align="center" valign="top" width="50%">
+      <a href="images/aero-c14-card-light.png"><img src="images/aero-c14-card-light.png" alt="Jasny motyw HA: temperatury, wentylatory, filtr, jakość powietrza i sterowanie AERO C14" width="420"></a>
+    </td>
+    <td align="center" valign="top" width="50%">
+      <a href="images/aero-c14-schedule-card-light.png"><img src="images/aero-c14-schedule-card-light.png" alt="Jasny motyw HA: edytor harmonogramu Nano z osią czasu i trzema przedziałami" width="420"></a>
+    </td>
+  </tr>
 </table>
 
 Kliknij obraz, aby zobaczyć pełny rozmiar.
+
+<details>
+  <summary>Edytor karty: wybór widocznych elementów</summary>
+  <p>Tytuł i widoczność poszczególnych elementów ustawisz w wizualnym edytorze karty.</p>
+  <a href="images/aero-c14-card-editor.png"><img src="images/aero-c14-card-editor.png" alt="Edytor AERO C14: tytuł i 16 przełączników widoczności elementów karty" width="420"></a>
+</details>
 
 ## Możliwości
 
@@ -54,7 +72,8 @@ Kliknij obraz, aby zobaczyć pełny rozmiar.
 - Edytor tygodniowego harmonogramu Nano, w tym programu świątecznego.
 - Rozszerzone nastawy urządzenia i synchronizacja zegara.
 - Automatyczne wykrywanie opcjonalnych czujników CO₂, PM2,5 i PM10.
-- Dwie dołączone karty panelu Home Assistant.
+- Dwie dołączone karty panelu dopasowane do motywu Home Assistant.
+- Wizualny edytor tytułu i widoczności elementów karty rekuperatora.
 
 ## Spis treści
 
@@ -129,7 +148,7 @@ Po wyłączeniu wykrywania użytkownik odpowiada za to, aby podczas lokalnego od
 
 ## Karty panelu
 
-Integracja automatycznie rejestruje obie karty jako zasoby Lovelace typu `module`. Nie trzeba dodawać plików JavaScript ręcznie. Rejestracja działa po restarcie Home Assistant i przeładowaniu integracji, usuwa powtórzone wpisy tych kart i aktualizuje adresy zasobów na podstawie zawartości plików, aby unieważnić cache.
+Integracja automatycznie rejestruje obie karty. Rejestracja działa po restarcie Home Assistant i przeładowaniu integracji, usuwa powtórzone wpisy tych kart i aktualizuje adresy zasobów na podstawie zawartości plików, aby unieważnić cache.
 
 Obsługiwany jest również tryb `resource_mode: yaml` w sekcji `lovelace`: karty są dodawane do zasobów w pamięci HA, także po wywołaniu `lovelace.reload_resources`. Pliki YAML użytkownika pozostają bez zmian. Błędy rejestracji są zapisywane w dzienniku integracji.
 
@@ -143,6 +162,24 @@ title: Rekuperator
 ```
 
 Karta pokazuje przepływ powietrza, temperatury, wydajność wentylatorów i najważniejsze elementy sterowania. Wybrana opcja lekko pulsuje podczas oczekiwania na potwierdzenie. Pozostałe funkcje pozostają dostępne.
+
+Wygląd karty automatycznie korzysta z motywu Home Assistant: tła, tekstu, koloru akcentu, obramowania, zaokrąglenia i cienia. Zmiana motywu jasnego/ciemnego działa również na schemacie temperatur i kontrolkach.
+
+W wizualnym edytorze karty można zmienić tytuł oraz wybrać widoczne elementy: nagłówek, stan połączenia, schemat z temperaturami, wentylatory, filtr, osobno CO₂/PM2,5/PM10, wentylację, tryb pracy, bieg, kominek, bypass, GWC, wietrzenie i stopkę. Domyślnie wszystkie są włączone; czujniki jakości powietrza dodatkowo wymagają dostępnych danych. Ukrywanie dotyczy widoku karty. Wysokość dopasowuje się do zawartości.
+
+Te same ustawienia można zapisać w YAML, np.:
+
+```yaml
+type: custom:aero4-card
+title: Rekuperator
+visibility:
+  fireplace: false
+  gwc: false
+  air_pm10_percent: false
+  footer: false
+```
+
+Klucze `visibility`: `header`, `connection`, `diagram`, `fans`, `filter`, `air_co2`, `air_pm25_percent`, `air_pm10_percent`, `power`, `mode`, `gear`, `fireplace`, `bypass`, `gwc`, `boost`, `footer`. Pominięty klucz oznacza widoczny element.
 
 - **Wentylacja** — włączenie i wyłączenie urządzenia.
 - **Tryb pracy** — Harmonogram, Ręcznie, Urlop i Poza domem.
@@ -172,6 +209,8 @@ title: Harmonogram
 ```
 
 Edytor obsługuje dni tygodnia, program świąteczny i trzy przedziały dziennie. Zmiany są wysyłane dopiero po wybraniu **Zapisz**. Operacje zapisu harmonogramu wymagają konta administratora HA.
+
+Wybrany dzień, przyciski i podgląd przedziałów korzystają z akcentu motywu HA. Trzy numerowane wiersze osi czasu mają różne odcienie tego koloru; obrys przerywany wskazuje niezapisaną edycję. Zmiana motywu zachowuje wybrany dzień i niezapisane godziny. Wysokość karty dopasowuje się do zawartości.
 
 ## Encje
 
@@ -206,7 +245,7 @@ Problemy i propozycje zmian zgłaszaj w [GitHub Issues](https://github.com/piotr
 
 Zasady zgłaszania błędów i proponowania zmian znajdują się w [CONTRIBUTING.md](CONTRIBUTING.md). Publiczne repozytorium zawiera kod integracji i dokumentację użytkową. Testy, dane transmisji i materiały badawcze są utrzymywane poza nim.
 
-## Specjalne podziękowania dla:
+## Specjalne podziękowania
 
 **Piotr Murawski** za pomoc w opisaniu protokołu C14 i konsultacje podczas testowania integracji.
 
