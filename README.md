@@ -20,7 +20,7 @@
 
 Lokalna integracja rekuperatora **AERO 4** z panelem **Nano Color 2**. Umożliwia odczyt parametrów, sterowanie wentylacją i zarządzanie harmonogramem bez korzystania z chmury iNext.
 
-**Wersja: 1.0.2** · **Języki: polski i angielski** · **Licencja: MIT**
+**Wersja: 1.0.3** · **Języki: polski i angielski** · **Licencja: MIT**
 
 ## Podgląd kart
 
@@ -162,6 +162,8 @@ title: Rekuperator
 ```
 
 Karta pokazuje przepływ powietrza, temperatury, wydajność wentylatorów i najważniejsze elementy sterowania. Wybrana opcja lekko pulsuje podczas oczekiwania na potwierdzenie. Pozostałe funkcje pozostają dostępne.
+
+Po powrocie na dashboard karta ponownie wykorzystuje rozpoznane encje i od razu wyświetla ich bieżące stany z HA. Pierwsze otwarcie oraz zmiana rejestru encji lub ponowne połączenie z HA wymagają rozpoznania encji.
 
 Wygląd karty automatycznie korzysta z motywu Home Assistant: tła, tekstu, koloru akcentu, obramowania, zaokrąglenia i cienia. Zmiana motywu jasnego/ciemnego działa również na schemacie temperatur i kontrolkach.
 

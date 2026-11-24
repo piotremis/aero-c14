@@ -1,4 +1,46 @@
                                                                               
+// Cache only registry metadata, scoped to the authenticated HA connection.
+// Keep one event subscription while dashboards are away, never card instances or readings.
+const REGISTRY_CACHES=new WeakMap();
+function loadRegistry(cache){
+  if(cache.entries!==null||cache.pending||cache.offline||cache.retryTimer)return;
+  const revision=cache.revision;cache.pending=true;
+  Promise.resolve().then(()=>cache.request({type:'config/entity_registry/list'})).then(entries=>{
+    if(revision!==cache.revision)return;
+    if(!Array.isArray(entries))throw Error('Invalid entity registry');
+    cache.entries=entries.filter(e=>e.platform==='compit_aero4');cache.loadedAt=Date.now();
+    for(const listener of cache.listeners)listener(false);
+  }).catch(()=>{
+    if(revision!==cache.revision)return;
+    cache.retryTimer=setTimeout(()=>{cache.retryTimer=null;if(cache.listeners.size)loadRegistry(cache);},2000);
+  }).finally(()=>{
+    cache.pending=false;
+    if(revision!==cache.revision&&cache.listeners.size)loadRegistry(cache);
+  });
+}
+function registryCache(hass){
+  const key=hass?.connection??hass?.callWS;
+  if(!key||!['object','function'].includes(typeof key)||!hass?.callWS)return null;
+  let cache=REGISTRY_CACHES.get(key);
+  if(!cache){
+    const connection=hass.connection,callWS=hass.callWS;
+    cache={entries:null,pending:false,revision:0,listeners:new Set(),retryTimer:null,offline:false,loadedAt:0,subscribed:false,request:connection?.sendMessagePromise?message=>connection.sendMessagePromise(message):message=>callWS(message)};
+    REGISTRY_CACHES.set(key,cache);
+    const invalidate=()=>{
+      cache.entries=null;cache.revision++;clearTimeout(cache.retryTimer);cache.retryTimer=null;
+      for(const listener of cache.listeners)listener(true);
+      if(cache.listeners.size)loadRegistry(cache);
+    };
+    if(connection?.subscribeEvents){
+      Promise.resolve().then(()=>connection.subscribeEvents(invalidate,'entity_registry_updated')).then(()=>{cache.subscribed=true;}).catch(()=>{});
+    }
+    connection?.addEventListener?.('disconnected',()=>{cache.offline=true;invalidate();});
+    connection?.addEventListener?.('ready',()=>{cache.offline=false;invalidate();});
+  }
+  // Fallback for hosts without registry event subscriptions.
+  if(!cache.subscribed&&cache.entries!==null&&Date.now()-cache.loadedAt>30000){cache.entries=null;cache.revision++;}
+  return cache;
+}
 const KEYS = ['outdoor_temperature','supply_temperature','extract_temperature','exhaust_temperature',
   'room_temperature','room_temperature_setpoint','fan_a_percent','fan_b_percent',
   'supply_fan_speed','extract_fan_speed','ventilation_requested','ventilation_mode_requested',
@@ -125,8 +167,8 @@ ha-card{background:var(--card);border:var(--ha-card-border-width,1px) solid var(
 
 export class Aero4Card extends HTMLElement {
   constructor(){super();this.attachShadow({mode:'open'});this._demo={...DEMO};this._choices={};this._timers={};this._busy=false;this._pending={};this._confirmed={};this._onKeyboard=()=>this._keyboardInput=true;this._onPointer=()=>this._keyboardInput=false;}
-  connectedCallback(){clearInterval(this._countdownInterval);this._countdownInterval=setInterval(()=>this._updateBoostCountdown(),1000);this._updateBoostCountdown();document.addEventListener('keydown',this._onKeyboard,true);document.addEventListener('pointerdown',this._onPointer,true);}
-  disconnectedCallback(){clearInterval(this._countdownInterval);this._countdownInterval=null;this._cancelChoices();document.removeEventListener('keydown',this._onKeyboard,true);document.removeEventListener('pointerdown',this._onPointer,true);}
+  connectedCallback(){clearInterval(this._countdownInterval);this._countdownInterval=setInterval(()=>this._updateBoostCountdown(),1000);this._updateBoostCountdown();document.addEventListener('keydown',this._onKeyboard,true);document.addEventListener('pointerdown',this._onPointer,true);this._update();}
+  disconnectedCallback(){clearInterval(this._countdownInterval);this._countdownInterval=null;this._registryCache?.listeners.delete(this._registryListener);this._cancelChoices();document.removeEventListener('keydown',this._onKeyboard,true);document.removeEventListener('pointerdown',this._onPointer,true);}
   _cancelChoices(){this._epoch=(this._epoch??0)+1;for(const p of Object.values(this._pending??{})){clearTimeout(p.timer);p.cancelDelay?.();}this._pending={};this._busy=false;this._choices={};}
 
   setConfig(config){
@@ -165,14 +207,14 @@ export class Aero4Card extends HTMLElement {
   _resolveEntities(){
     if(!this._config) return;
     this._resolved={...this._config.entities};
-                                                                               
-    if(!this._registry && !this._registryRequested && this._hass?.callWS){
-      this._registryRequested=true;
-      this._hass.callWS({type:'config/entity_registry/list'}).then(entries=>{
-        this._registry=entries;this._update();
-      }).catch(()=>{                                                                });
+    const cache=this._config.demo?null:registryCache(this._hass);
+    if(cache!==this._registryCache){
+      this._registryCache?.listeners.delete(this._registryListener);
+      this._registryCache=cache;this._confirmed={};
     }
-    const entries=(this._registry??[]).filter(e=>e.platform==='compit_aero4');
+    if(!this._registryListener)this._registryListener=invalidated=>{if(invalidated)this._confirmed={};this._update();};
+    if(cache){if(this.isConnected)cache.listeners.add(this._registryListener);loadRegistry(cache);}
+    const entries=cache?.entries??[];
     const device=this._config.device;
     const candidates=device ? entries.filter(e=>e.device_id===device) : entries;
     const devices=new Set(candidates.map(e=>e.device_id));
