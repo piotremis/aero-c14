@@ -23,6 +23,8 @@ class Receiver:
     
     
     PARTIAL_FRAME_NS = 500_000_000
+    TCP_FAILURE_LIMIT = 5
+    TCP_SLOW_RETRY_SECONDS = 300
     def __init__(self, config: SerialConfig | TcpConfig, *, stale_after: float,
                  on_update: Callable[[dict], None] | None = None,
                  retry_initial: float = 1, retry_max: float = 30,
@@ -42,6 +44,11 @@ class Receiver:
         self._factory = factory if factory is not None else lambda: source_for(config)
         self._clock = clock
         self._retry_initial, self._retry_max = retry_initial, retry_max
+        self._sleep = asyncio.sleep
+        self._connection_failures = 0
+        self._retry_delay = None
+        self._connection_opened_ns = None
+        self._last_valid_frame_ns = None
         self._running = False
         self.polling = LocalPolling(local_polling, gateway_detection=gateway_detection, extended_parameters=extended_parameters, solicit_status=solicit_status, direct_boost=direct_boost, direct_ventilation=direct_ventilation, direct_user_controls=direct_user_controls)
         self._pending_tx = None
@@ -58,7 +65,7 @@ class Receiver:
         self._last_rx_ns = None
         self.counters = dict(connection_attempts=0, connections=0, received_bytes=0,
             valid_frames=0, checksum_errors=0, discarded_bytes=0, truncated_bytes=0,
-            observer_errors=0)
+            observer_errors=0, stale_reconnects=0)
 
     def _observe(self, kind, now, **values):
         if self.observer is not None:
@@ -72,6 +79,10 @@ class Receiver:
 
     def snapshot(self):
         state = self.state.snapshot(self._clock())
+        problem = isinstance(self.config, TcpConfig) and self._connection_failures >= self.TCP_FAILURE_LIMIT
+        connection_status = ('stopped' if self.status == 'stopped' else
+            'connection_problems' if problem else
+            'waiting_for_data' if self.status == 'connected' and self._last_valid_frame_ns is None else self.status)
         parameters = [info for key, info in state['fields'].items() if key.startswith('parameter_')]
         received = sum(info['observed_ns'] is not None and info['status'] != 'unavailable' for info in parameters)
         known = sum(info['status'] == 'known' for info in parameters)
@@ -85,6 +96,9 @@ class Receiver:
                              'echoed':False,'write_closed':False},
             'transport': {'kind': 'serial' if isinstance(self.config, SerialConfig) else 'tcp',
                 'status': self.status, 'connected': self.status == 'connected',
+                'connection_status': connection_status, 'connection_problems': problem,
+                'consecutive_failures': self._connection_failures,
+                'retry_delay_seconds': self._retry_delay if self.status == 'retrying' else None,
                 'last_error': self.last_error, **self.counters}}
 
     def _publish(self):
@@ -400,6 +414,9 @@ class Receiver:
                 source = self._factory()
                 self._parser = StreamParser()
                 self._last_rx_ns = None
+                self._last_valid_frame_ns = None
+                self._connection_opened_ns = None
+                self._retry_delay = None
                 self._pending_tx = None
                 self.state.reset()
                 self.status = 'connecting'
@@ -407,6 +424,7 @@ class Receiver:
                 try:
                     self._publish()
                     await source.open()
+                    self._connection_opened_ns = self._clock()
                     self.status = 'connected'
                     self.last_error = None
                     self.counters['connections'] += 1
@@ -429,11 +447,22 @@ class Receiver:
                             self._last_rx_ns = now
                             if self._feed(data, now):
                                 delay = self._retry_initial
+                                self._last_valid_frame_ns = now
+                                self._connection_failures = 0
                         elif (self._last_rx_ns is not None and self._parser.buffer
                               and now - self._last_rx_ns > min(self.state.stale_after_ns, self.PARTIAL_FRAME_NS)):
                             self._observe('stream_gap', now, reason='partial_frame_timeout')
                             self._finish()
                             self.polling.stream_gap('partial_frame_timeout', now)
+                        if isinstance(self.config, TcpConfig):
+                            last_frame = (self._last_valid_frame_ns if self._last_valid_frame_ns is not None
+                                          else self._connection_opened_ns)
+                            if now - last_frame > self.state.stale_after_ns:
+                                self.counters['stale_reconnects'] += 1
+                                self._observe('stream_gap', now, reason='tcp_stale_timeout')
+                                _LOGGER.warning('No valid C14 frame over TCP for %.1f seconds; reconnecting',
+                                                (now - last_frame) / 1e9)
+                                raise TimeoutError('No valid C14 frame within stale_after')
                         if self._pending_tx is None:
                             self._pending_tx = self.polling.idle(now,
                                 stream_idle=not self._parser.buffer and self._last_rx_ns is not None
@@ -444,6 +473,11 @@ class Receiver:
                         self._publish()
                 except (OSError, EOFError) as error:
                     self.last_error = f'{type(error).__name__}: {error}'
+                    if isinstance(self.config, TcpConfig):
+                        self._connection_failures += 1
+                    self._retry_delay = (self.TCP_SLOW_RETRY_SECONDS
+                        if isinstance(self.config, TcpConfig) and self._connection_failures >= self.TCP_FAILURE_LIMIT
+                        else delay)
                 finally:
                     try:
                         await source.close()
@@ -457,7 +491,7 @@ class Receiver:
                         self.polling.disconnected()
                 self.status = 'retrying'
                 self._publish()
-                await asyncio.sleep(delay)
+                await self._sleep(self._retry_delay)
                 delay = min(delay * 2, self._retry_max)
         finally:
             self.status = 'stopped'

@@ -20,7 +20,7 @@
 
 Lokalna integracja rekuperatora **AERO 4** z panelem **Nano Color 2**. Umożliwia odczyt parametrów, sterowanie wentylacją i zarządzanie harmonogramem bez korzystania z chmury iNext.
 
-**Wersja: 1.0.3** · **Języki: polski i angielski** · **Licencja: MIT**
+**Wersja: 1.0.4** · **Języki: polski i angielski** · **Licencja: MIT**
 
 ## Podgląd kart
 
@@ -129,7 +129,7 @@ Wybierz **Ustawienia → Urządzenia i usługi → Dodaj integrację → AERO C1
 | --- | --- |
 | Połączenie szeregowe | Port adaptera USB/RS485 |
 | Połączenie TCP | Adres i port konwertera TCP/RS485 |
-| Próg świeżości | Czas, po którym brak nowych danych oznacza niedostępny odczyt |
+| Próg świeżości | Czas, po którym brak nowych danych oznacza niedostępny odczyt; dla TCP również próg ponownego połączenia |
 | Lokalne odpytywanie | Odczyt nastaw i obsługa sterowania przez integrację |
 | Rozszerzone nastawy | Dodatkowe parametry urządzenia i obsługa harmonogramu |
 | Synchronizacja zegara | Opcjonalne automatyczne ustawianie czasu Nano z HA |
@@ -137,6 +137,16 @@ Wybierz **Ustawienia → Urządzenia i usługi → Dodaj integrację → AERO C1
 Domyślnie integracja pracuje jako odbiornik danych. Aby korzystać ze sterowania i edytora harmonogramu, włącz **Lokalne odpytywanie** i **Rozszerzone nastawy**.
 
 Przed włączeniem lokalnego odpytywania odłącz iNext lub inną bramkę sterującą tą samą magistralą. Nano pozostaje masterem. Z jednego portu adaptera może korzystać tylko jeden odbiornik.
+
+### Odzyskiwanie połączenia TCP
+
+Jeżeli od ostatniej poprawnej ramki upłynie więcej niż ustawiony **Próg świeżości** (`stale_after`), integracja zamknie połączenie TCP i spróbuje połączyć się ponownie. Przy braku pierwszej ramki czas jest liczony od otwarcia połączenia. Niepoprawne lub niepełne dane nie przedłużają tego czasu. Mechanizm nie dotyczy portów USB/RS485.
+
+Po **5 kolejnych nieudanych próbach** zestawienia połączenia lub odzyskania poprawnych ramek integracja czeka **5 minut przed każdą następną próbą**. Odebranie poprawnej ramki zeruje licznik błędów i przywraca zwykły tryb ponawiania.
+
+Encja diagnostyczna **Stan połączenia TCP** pozostaje dostępna także podczas przerw w komunikacji. Po wyczerpaniu pięciu prób pokazuje **Problemy z połączeniem**. Jej atrybuty zawierają liczbę kolejnych błędów (`consecutive_failures`), odstęp przed następną próbą (`retry_delay_seconds`) i liczbę odnowień po zaniku ramek (`stale_reconnects`).
+
+Ponowne połączenie nie odtwarza niepotwierdzonych zapisów do urządzenia i nie usuwa blokad bezpieczeństwa magistrali.
 
 ### Wykrywanie innych bramek
 

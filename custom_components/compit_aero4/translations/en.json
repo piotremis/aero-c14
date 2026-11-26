@@ -1117,6 +1117,17 @@
       },
       "air_pm10_percent": {
         "name": "PM10 (% of norm)"
+      },
+      "connection_status": {
+        "name": "TCP connection status",
+        "state": {
+          "stopped": "Stopped",
+          "connecting": "Connecting",
+          "waiting_for_data": "Waiting for data",
+          "connected": "Connected",
+          "retrying": "Retrying connection",
+          "connection_problems": "Connection problems"
+        }
       }
     },
     "binary_sensor": {

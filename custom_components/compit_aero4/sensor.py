@@ -8,6 +8,7 @@ from .entity import Aero4Entity
 from .c14.parameters import PARAMETERS
 from .c14.protocol import AIR_QUALITY_FRAME_KEY
 from .const import DOMAIN
+from .c14.transport import TcpConfig
 
 AIR_QUALITY_SENSORS = (
     SensorEntityDescription(key='air_co2', translation_key='air_co2',
@@ -72,6 +73,12 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     entry.async_on_unload(entry.runtime_data.async_add_listener(discover_air_quality))
     discover_air_quality()
+    if isinstance(entry.runtime_data.receiver.config, TcpConfig):
+        async_add_entities([Aero4ConnectionStatusSensor(entry.runtime_data, SensorEntityDescription(
+            key='connection_status', translation_key='connection_status',
+            device_class=SensorDeviceClass.ENUM,
+            options=['stopped', 'connecting', 'waiting_for_data', 'connected', 'retrying', 'connection_problems'],
+            entity_category=EntityCategory.DIAGNOSTIC, icon='mdi:lan-connect'))])
     if entry.data.get('extended_parameters', False):
         async_add_entities([Aero4FilterRemainingSensor(entry.runtime_data, SensorEntityDescription(
             key='filter_days_remaining', translation_key='filter_days_remaining',
@@ -156,6 +163,18 @@ class Aero4FilterRemainingSensor(Aero4Entity, SensorEntity):
         fields = self.coordinator.data['fields']
         return (fields['parameter_filter_reminder_period']['value']
                 - fields['parameter_filter_elapsed_days']['value'])
+
+
+class Aero4ConnectionStatusSensor(Aero4Entity, SensorEntity):
+    @property
+    def native_value(self):
+        return self.coordinator.data['transport']['connection_status']
+
+    @property
+    def extra_state_attributes(self):
+        transport = self.coordinator.data['transport']
+        return {key: transport[key] for key in
+                ('consecutive_failures', 'retry_delay_seconds', 'stale_reconnects')}
 
 
 class Aero4PollingSensor(Aero4Entity, SensorEntity):

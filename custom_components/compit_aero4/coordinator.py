@@ -70,6 +70,8 @@ class Aero4Coordinator(DataUpdateCoordinator):
     @staticmethod
     def _visible_state(snapshot):
         return (snapshot['transport']['connected'], snapshot['bus_online'], snapshot['aero_online'],
+            tuple((key, snapshot['transport'].get(key)) for key in
+                  ('connection_status', 'consecutive_failures', 'retry_delay_seconds', 'stale_reconnects')),
             snapshot.get('polling',{}).get('status'),
             tuple(sorted(snapshot.get('schedule_operation', {}).items())),
             tuple(sorted(snapshot.get('command', {}).items())),
